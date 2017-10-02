@@ -18,6 +18,7 @@ public class ConnectionHandler implements Runnable
 
 	public ConnectionHandler (Socket socket)
 	{
+		System.out.println("Created ConnectionHandler on socket " + socket.getRemoteSocketAddress());
 		this.socket = socket;
 	}
 
@@ -73,6 +74,22 @@ public class ConnectionHandler implements Runnable
 	public String readString()
 	{
 		return new String(this.readBytes(), Constants.ENCODING);
+	}
+
+	boolean hasData ()
+	{
+		int avail = 0;
+		try
+		{
+			avail = this.in.available();
+		}
+		catch (IOException ioe)
+		{
+			System.err.println("ConnectionHandler.hasData()\tAn IOException was thrown when checking if the ConnectionHandler has any data");
+		}
+
+
+		return avail > 0;
 	}
 
 	public void write (byte[] data) throws IOException

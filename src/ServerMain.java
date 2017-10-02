@@ -1,3 +1,5 @@
+import Network.Constants;
+
 import java.io.IOException;
 
 public class ServerMain
@@ -16,6 +18,26 @@ public class ServerMain
 		}
 
 		System.out.println("Server: " + tcpServer.toString());
+
+		System.out.println("Press enter to check for data");
+		try
+		{
+			System.in.read();
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+
+		for (String host : tcpServer.getActiveConnections())
+		{
+			if (tcpServer.hasData(host))
+			{
+				System.out.println("Received the following data from " + host);
+				System.out.println(new String(tcpServer.receive(host), Constants.ENCODING));
+			}
+		}
+
 		System.out.println("Press enter to close server");
 
 		try

@@ -7,6 +7,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 public class Server implements TCPServer
 {
@@ -25,7 +26,7 @@ public class Server implements TCPServer
 
 	@Override
 	public void start() throws
-	                    IOException
+						IOException
 	{
 		this.socket = new ServerSocket(this.portNum);
 
@@ -144,6 +145,16 @@ public class Server implements TCPServer
 			System.err.println("Network.TCP.Server.run()\tException was thrown in call to accept()");
 			ioe.printStackTrace();
 		}
+	}
+
+	public Set<String> getActiveConnections ()
+	{
+		return this.incomingConnections.keySet();
+	}
+
+	public boolean hasData (String remoteHost)
+	{
+		return this.incomingConnections.get(remoteHost).hasData();
 	}
 
 	public String toString()

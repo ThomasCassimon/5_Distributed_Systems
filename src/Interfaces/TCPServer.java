@@ -7,13 +7,13 @@ public interface TCPServer extends Runnable
 {
 	/**
 	 * Starts the TCP server.
-	 * @throws IOException  An IOException can be thrown by the ServerSocket constructor
+	 * @throws IOException	An IOException can be thrown by the ServerSocket constructor
 	 */
 	public void start () throws IOException;
 
 	/**
 	 * Returns the port that the server is running on.<br>
-	 * @return  The port that the server runs on.<br>
+	 * @return	The port that the server runs on.<br>
 	 */
 	public int getPort ();
 
@@ -22,43 +22,43 @@ public interface TCPServer extends Runnable
 	 * Sets the port the server is running on.<br>
 	 * <b>WARNING:</b> Before the port is changed, the server needs to be stopped.<br>
 	 * <b>WARNING:</b> After the port is changed, the server needs to be restarted.<br>
-	 * @param   port    The new port the server should listen on.<br>
+	 * @param	port	The new port the server should listen on.<br>
 	 */
 	public void setPort (int port);
 
 	/**
 	 * Sends a string. to the specified remote host.<br>
-	 * @param remoteHost    The remote host that the data should be sent to.<br>
-	 * @param data          The data to be sent.<br>
+	 * @param remoteHost	The remote host that the data should be sent to.<br>
+	 * @param data			The data to be sent.<br>
 	 */
 	public void send (String remoteHost, String data);
 
 	/**
 	 * Sends all bytes in the data array to the specified remote host.<br>
-	 * @param remoteHost    The remote host that the data should be sent to.<br>
-	 * @param data          The data to be sent.<br>
+	 * @param remoteHost	The remote host that the data should be sent to.<br>
+	 * @param data			The data to be sent.<br>
 	 */
 	public void send (String remoteHost, byte[] data);
 
 	/**
 	 * Sends all bytes in the data list to specified the remote host.<br>
-	 * @param remoteHost    The remote host that the data should be sent to.<br>
-	 * @param data          The data to be sent.<br>
+	 * @param remoteHost	The remote host that the data should be sent to.<br>
+	 * @param data			The data to be sent.<br>
 	 */
 	public void send (String remoteHost, List<Byte> data);
 
 	/**
 	 * Reads all bytes from the interal receive buffer.<br>
-	 * @param   remoteHost  The remote host from whose buffer we want to read.<br>  //todo: Check Grammar
-	 * @return  All data in the buffer for the specified host.<br>
+	 * @param	remoteHost	The remote host from whose buffer we want to read.<br>	//todo: Check Grammar
+	 * @return	All data in the buffer for the specified host.<br>
 	 */
 	public byte[] receive (String remoteHost);
 
 	/**
 	 * read numBytes bytes from the internal receive buffer.<br>
-	 * @param remoteHost    The remote host from whose buffer we want to read.<br> //todo: Check Grammar
-	 * @param numBytes      The number of bytes to read.<br>
-	 * @return              The first numBytes bytes in the inputStream for the requested host.<br>
+	 * @param remoteHost	The remote host from whose buffer we want to read.<br> //todo: Check Grammar
+	 * @param numBytes		The number of bytes to read.<br>
+	 * @return				The first numBytes bytes in the inputStream for the requested host.<br>
 	 */
 	public byte[] receive (String remoteHost, int numBytes);
 

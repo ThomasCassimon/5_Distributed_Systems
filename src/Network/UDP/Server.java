@@ -17,7 +17,7 @@ public class Server implements UDPServer
 
 	@Override
 	public void start() throws
-	                    IOException
+						IOException
 	{
 
 	}
@@ -36,21 +36,21 @@ public class Server implements UDPServer
 
 	@Override
 	public void send(String remoteHost,
-	                 String data)
+					 String data)
 	{
 
 	}
 
 	@Override
 	public void send(String remoteHost,
-	                 byte[] data)
+					 byte[] data)
 	{
 
 	}
 
 	@Override
 	public void send(String remoteHost,
-	                 List<Byte> data)
+					 List<Byte> data)
 	{
 
 	}
@@ -63,14 +63,14 @@ public class Server implements UDPServer
 
 	@Override
 	public byte[] receive(String remoteHost,
-	                      int numBytes)
+							int numBytes)
 	{
 		return new byte[0];
 	}
 
 	@Override
 	public void stop() throws
-	                   IOException
+						IOException
 	{
 
 	}
