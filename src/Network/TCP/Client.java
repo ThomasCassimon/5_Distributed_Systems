@@ -16,6 +16,7 @@ public class Client implements TCPClient
 
     public Client()
     {
+
         this.serverPort = NetworkConstants.TCP_PORT;
     }
 
