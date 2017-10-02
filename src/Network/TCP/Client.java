@@ -1,7 +1,7 @@
 package Network.TCP;
 
 import Interfaces.TCPClient;
-import Network.NetworkConstants;
+import Network.Constants;
 
 import java.net.*;
 import java.io.*;
@@ -17,7 +17,7 @@ public class Client implements TCPClient
     public Client()
     {
 
-        this.serverPort = NetworkConstants.TCP_PORT;
+        this.serverPort = Constants.TCP_PORT;
     }
 
     @Override
@@ -25,7 +25,7 @@ public class Client implements TCPClient
     {
         try
         {
-            this.clientSocket = new Socket(NetworkConstants.TCP_SERVER_IP, this.serverPort);
+            this.clientSocket = new Socket(Constants.TCP_SERVER_IP, this.serverPort);
             inputStream = new DataInputStream(clientSocket.getInputStream());
         }
         catch(IOException e)
