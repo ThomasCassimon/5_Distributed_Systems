@@ -52,15 +52,54 @@ public class Server implements TCPServer
 	}
 
 	@Override
+	public void send(String data)
+	{
+		try
+		{
+			this.ch.write(data);
+		}
+		catch (IOException ioe)
+		{
+			System.err.println("Networking.TCP.Server::send()\tAn Exception occurred while trying to send data");
+			ioe.printStackTrace();
+		}
+	}
+
+	@Override
 	public void send(byte[] data)
 	{
-
+		try
+		{
+			this.ch.write(data);
+		}
+		catch (IOException ioe)
+		{
+			System.err.println("Networking.TCP.Server::send()\tAn Exception occurred while trying to send data");
+			ioe.printStackTrace();
+		}
 	}
 
 	@Override
 	public void send(List<Byte> data)
 	{
+		byte[] dataArray = new byte [data.size()];
+		int i = 0;
 
+		for (byte b : data)
+		{
+			dataArray[i] = b;
+			i++;
+		}
+
+		try
+		{
+			this.ch.write(dataArray);
+		}
+		catch (IOException ioe)
+		{
+			System.err.println("Networking.TCP.Server::send()\tAn Exception occurred while trying to send data");
+			ioe.printStackTrace();
+		}
 	}
 
 	@Override
