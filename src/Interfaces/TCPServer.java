@@ -1,5 +1,6 @@
 package Interfaces;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface TCPServer extends Runnable
@@ -7,7 +8,7 @@ public interface TCPServer extends Runnable
 	/**
 	 * Starts the TCP server
 	 */
-	public void start ();
+	public void start () throws IOException;
 
 	/**
 	 * Returns the port that the server is running on
@@ -22,6 +23,12 @@ public interface TCPServer extends Runnable
 	 * @param port
 	 */
 	public void setPort (int port);
+
+	/**
+	 * Sends a string
+	 * @param data
+	 */
+	public void send (String data);
 
 	/**
 	 * Sends all bytes in the data array
