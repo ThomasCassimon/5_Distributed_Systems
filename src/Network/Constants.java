@@ -9,8 +9,8 @@ import java.nio.charset.StandardCharsets;
 public class Constants
 {
 
-    public final static int TCP_PORT = 1997;
-    public final static int UDP_PORT = 2017;
+	public final static int TCP_PORT = 1997;
+	public final static int UDP_PORT = 2017;
 
 	/**
 	 * Server IP for testing purposes.<br>
@@ -18,7 +18,7 @@ public class Constants
 	 * If you don't:<br>
 	 * <img src="http://godlessmom.com/wp-content/uploads/2015/03/youre-going-to-have-a-bad-time.png" alt="You're going to have a bad time.">
 	 */
-	public final static String TCP_SERVER_IP = "143.169.195.121";
+	public final static String TCP_SERVER_IP = "localhost";
 
 
 	/**

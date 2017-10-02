@@ -9,140 +9,141 @@ import java.util.List;
 
 public class Client implements TCPClient
 {
-    private static final int BUFFER_SIZE = 1500;
-    private int serverPort;
-    private Socket clientSocket;
-    private DataInputStream inputStream;
-    private DataOutputStream outputStream;
+	private static final int BUFFER_SIZE = 1500;
+	private int serverPort;
+	private Socket clientSocket;
+	private DataInputStream inputStream;
+	private DataOutputStream outputStream;
 
-    public Client()
-    {
+	//todo: Add IP to connect to as argument
+	//todo: Add overload for client ctor that takes the port no. to connect to
+	public Client()
+	{
+		this.serverPort = Constants.TCP_PORT;
+	}
 
-        this.serverPort = Constants.TCP_PORT;
-    }
+	@Override
+	public void start()
+	{
+		try
+		{
+			this.clientSocket = new Socket(Constants.TCP_SERVER_IP, this.serverPort);
+			inputStream = new DataInputStream(clientSocket.getInputStream());
+			outputStream = new DataOutputStream(clientSocket.getOutputStream());
+		}
+		catch(IOException e)
+		{
+			System.err.println("IO exception when starting client TCP socket");
+			e.printStackTrace();
+		}
+	}
 
-    @Override
-    public void start()
-    {
-        try
-        {
-            this.clientSocket = new Socket(Constants.TCP_SERVER_IP, this.serverPort);
-            inputStream = new DataInputStream(clientSocket.getInputStream());
-            outputStream = new DataOutputStream(clientSocket.getOutputStream());
-        }
-        catch(IOException e)
-        {
-            System.err.println("IO exception when starting client TCP socket");
-            e.printStackTrace();
-        }
-    }
+	@Override
+	public int getPort()
+	{
+		return serverPort;
+	}
 
-    @Override
-    public int getPort()
-    {
-        return serverPort;
-    }
+	@Override
+	public void setPort(int port)
+	{
+		this.serverPort = port;
+	}
 
-    @Override
-    public void setPort(int port)
-    {
-        this.serverPort = port;
-    }
+	@Override
+	public void send(byte[] data)
+	{
+		try
+		{
+			outputStream.write(data);
+		}
+		catch(IOException e)
+		{
+			System.err.println("Error when writing data to outputstream");
+			e.printStackTrace();
+		}
+	}
 
-    @Override
-    public void send(byte[] data)
-    {
-        try
-        {
-            outputStream.write(data);
-        }
-        catch(IOException e)
-        {
-            System.err.println("Error when writing data to outputstream");
-            e.printStackTrace();
-        }
-    }
+	@Override
+	public void send(List<Byte> data)
+	{
+		byte[] arrayData = new byte[data.size()];
 
-    @Override
-    public void send(List<Byte> data)
-    {
-        byte[] arrayData = new byte[data.size()];
+		for (int i = 0; i<data.size();i++)
+		{
+			arrayData[i] = data.get(i);
+		}
 
-        for (int i = 0; i<data.size();i++)
-        {
-            arrayData[i] = data.get(i);
-        }
+		try
+		{
+			outputStream.write(arrayData);
+		}
+		catch(IOException e)
+		{
+			System.err.println("Error when writing data to outputstream");
+			e.printStackTrace();
+		}
+	}
 
-        try
-        {
-            outputStream.write(arrayData);
-        }
-        catch(IOException e)
-        {
-            System.err.println("Error when writing data to outputstream");
-            e.printStackTrace();
-        }
-    }
+	@Override
+	public byte[] receive()
+	{
+		int i;
+		try
+		{
+			i = inputStream.available();
+		}
+		catch (IOException e)
+		{
+			System.err.println("Error when estimating length of inputstream");
+			e.printStackTrace();
+		}
 
-    @Override
-    public byte[] receive()
-    {
-        int i;
-        try
-        {
-            i = inputStream.available();
-        }
-        catch (IOException e)
-        {
-            System.err.println("Error when estimating length of inputstream");
-            e.printStackTrace();
-        }
-
-        byte[] data = new byte[BUFFER_SIZE];
+		byte[] data = new byte[BUFFER_SIZE];
 
 
-        try
-        {
-             inputStream.read(data);
-        }
-        catch (IOException e)
-        {
-            System.err.println("Error when reading byte from input stream");
-            e.printStackTrace();
-        }
+		try
+		{
+			 inputStream.read(data);
+		}
+		catch (IOException e)
+		{
+			System.err.println("Error when reading byte from input stream");
+			e.printStackTrace();
+		}
 
-        return data;
-    }
+		return data;
+	}
 
-    @Override
-    public byte[] receive(int numBytes)
-    {
-        byte[] data = new byte[numBytes];
+	@Override
+	public byte[] receive(int numBytes)
+	{
+		byte[] data = new byte[numBytes];
 
-        try
-        {
-            inputStream.read(data);
-        }
-        catch(IOException e)
-        {
-            System.err.println("Error when reading certain amount of bytes from inputstream");
-            e.printStackTrace();
-        }
+		try
+		{
+			inputStream.read(data);
+		}
+		catch(IOException e)
+		{
+			System.err.println("Error when reading certain amount of bytes from inputstream");
+			e.printStackTrace();
+		}
 
-        return data;
-    }
+		return data;
+	}
 
-    @Override
-    public void stop()
-    {
-        try
-        {
-            clientSocket.close();
-        }
-        catch(IOException e)
-        {
-            System.err.println("Error when closing client socket");
-            e.printStackTrace();
-        }
-    }
+	@Override
+	public void stop()
+	{
+		try
+		{
+			clientSocket.close();
+		}
+		catch(IOException e)
+		{
+			System.err.println("Error when closing client socket");
+			e.printStackTrace();
+		}
+	}
 }
