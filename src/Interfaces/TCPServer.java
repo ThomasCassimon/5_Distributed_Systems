@@ -58,7 +58,7 @@ public interface TCPServer extends Runnable
 	/**
 	 * Stops the server
 	 */
-	public void stop();
+	public void stop() throws IOException;
 
 	/**
 	 * Called by the server's start() method.

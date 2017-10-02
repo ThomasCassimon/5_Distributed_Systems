@@ -16,8 +16,8 @@ public class Server implements TCPServer
 
 	public Server (int port)
 	{
-		this.portNum = port;
 		this.isRunning = false;
+		this.portNum = port;
 		this.socket = null;
 		this.ch = null;
 	}
@@ -27,6 +27,7 @@ public class Server implements TCPServer
 	                    IOException
 	{
 		this.socket = new ServerSocket(this.portNum);
+
 		Thread t = new Thread(this);
 		t.start();
 		this.isRunning = true;
@@ -115,18 +116,14 @@ public class Server implements TCPServer
 	}
 
 	@Override
-	public void stop()
+	public void stop() throws IOException
 	{
-		try
+		synchronized (this.socket)
 		{
 			this.socket.close();
-			this.isRunning = false;
 		}
-		catch (IOException ioe)
-		{
-			System.err.println("Network.TCP.Server::stop()\tAn Exception was thrown while trying to close the socket.");
-			ioe.printStackTrace();
-		}
+
+		this.isRunning = false;
 	}
 
 	@Override
@@ -134,12 +131,15 @@ public class Server implements TCPServer
 	{
 		try
 		{
-			while (this.isRunning)
+			while (this.isRunning && !this.socket.isClosed())
 			{
-				Socket clientSocket = this.socket.accept();
-				this.ch = new ConnectionHandler(clientSocket);
+				synchronized (this.socket)
+				{
+					Socket clientSocket = this.socket.accept();
+					this.ch = new ConnectionHandler(clientSocket);
+				}
 
-				Thread t = new Thread(ch);
+				Thread t = new Thread(this.ch);
 				t.start();
 			}
 		}
