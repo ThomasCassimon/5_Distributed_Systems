@@ -1,10 +1,12 @@
 package Network.TCP;
 
+import Network.Constants;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.Arrays;
+import java.util.ArrayList;
 
 public class ConnectionHandler implements Runnable
 {
@@ -13,30 +15,64 @@ public class ConnectionHandler implements Runnable
 	private DataInputStream in;
 	private DataOutputStream out;
 	private Socket socket;
-	private byte[] data;
 
 	public ConnectionHandler (Socket socket)
 	{
 		this.socket = socket;
-		this.data = new byte [BUFFER_SIZE];
 	}
 
 	public byte[] readBytes (int numBytes)
 	{
-		byte[] data = new byte [numBytes];
-		System.arraycopy(this.data, 0, data, 0, numBytes);
-		System.arraycopy(this.data, numBytes, this.data, 0, this.data.length - numBytes - 1);
-		return data;
+		byte[] tmpBuffer = new byte [numBytes];
+
+		try
+		{
+			this.in.read(tmpBuffer, 0, numBytes);
+		}
+		catch (IOException ioe)
+		{
+			System.err.println("Networking.TCP.ConnectionHandler.readBytes()\tAn exception was thrown while trying to read from DataInputStream");
+			ioe.printStackTrace();
+		}
+
+		return tmpBuffer;
 	}
 
 	public byte[] readBytes()
 	{
-		return this.data;
+		ArrayList<Byte> tmpBuffer = new ArrayList<Byte> (BUFFER_SIZE);
+
+		try
+		{
+			byte[] bytes = new byte [BUFFER_SIZE];
+
+			while (this.in.read(bytes) > 0)
+			{
+				for (byte b : bytes)
+				{
+					tmpBuffer.add(b);
+				}
+			}
+		}
+		catch (IOException ioe)
+		{
+			System.err.println("Networking.TCP.ConnectionHandler.readBytes()\tAn exception was thrown while trying to read from DataInputStream");
+			ioe.printStackTrace();
+		}
+
+		byte[] bytes = new byte [tmpBuffer.size()];
+
+		for (int i = 0; i < tmpBuffer.size(); i++)
+		{
+			bytes[i] = tmpBuffer.get(i);
+		}
+
+		return bytes;
 	}
 
 	public String readString()
 	{
-		return Arrays.toString(this.data);
+		return new String(this.readBytes(), Constants.ENCODING);
 	}
 
 	public void write (byte[] data) throws IOException
@@ -56,11 +92,10 @@ public class ConnectionHandler implements Runnable
 		{
 			this.in = new DataInputStream(this.socket.getInputStream());
 			this.out = new DataOutputStream(this.socket.getOutputStream());
-			this.in.readFully(this.data);
 		}
 		catch (IOException ioe)
 		{
-			System.err.println("Network.TCP.ConnectionHandler::run()\tAn exception was thrown when creating Data*Streams for the ConnectionHandler.");
+			System.err.println("Network.TCP.ConnectionHandler.run()\tAn exception was thrown when creating Data*Streams for the ConnectionHandler.");
 			ioe.printStackTrace();
 		}
 	}

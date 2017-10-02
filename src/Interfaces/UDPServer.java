@@ -1,57 +1,72 @@
 package Interfaces;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface UDPServer
 {
 	/**
-	 * Starts the UDP server
+	 * Starts the UDP server.
+	 * @throws IOException
 	 */
-	public void start ();
+	public void start () throws
+	                     IOException;
 
 	/**
-	 * Returns the port that the server is running on
-	 * @return
+	 * Returns the port that the server is running on.
+	 * @return  The port that the server runs on.
 	 */
 	public int getPort ();
 
 	/**
 	 * Sets the port the server is running on.
-	 * @warning Before the port is changed, the server needs to be stopped
-	 * @warning after the port is changed, the server needs to be restarted
-	 * @param port
+	 * @param   port    The new port the server should listen on.
+	 * WARNING: Before the port is changed, the server needs to be stopped.
+	 * WARNING: After the port is changed, the server needs to be restarted.
 	 */
 	public void setPort (int port);
 
 	/**
-	 * Sends all bytes in the data array
-	 * @param data
+	 * Sends a string
+	 * @param remoteHost    The remote host that the data should be sent to.
+	 * @param data          The data to be sent.
 	 */
-	public void send (byte[] data);
+	public void send (String remoteHost, String data);
+
+	/**
+	 * Sends all bytes in the data array.
+	 * @param remoteHost    The remote host that the data should be sent to.
+	 * @param data          The data to be sent.
+	 */
+	public void send (String remoteHost, byte[] data);
 
 	/**
 	 * Sends all bytes in the data list.
-	 * @param data
+	 * @param remoteHost    The remote host that the data should be sent to.
+	 * @param data          The data to be sent.
 	 */
-	public void send (List<Byte> data);
+	public void send (String remoteHost, List<Byte> data);
 
 	/**
 	 * reads all bytes from the interal receive buffer
-	 * @return
+	 * @param   remoteHost  The remote host from whose buffer we want to read.  //todo: Check Grammar
+	 * @return  All data in the buffer for the specified host.
 	 */
-	public byte[] receive ();
+	public byte[] receive (String remoteHost);
 
 	/**
 	 * read numBytes bytes from the internal receive buffer.
-	 * @param numBytes
-	 * @return
+	 * @param remoteHost    The remote host from whose buffer we want to read. //todo: Check Grammar
+	 * @param numBytes      The number of bytes to read.
+	 * @return              The first numBytes bytes in the inputStream for the requested host.
 	 */
-	public byte[] receive (int numBytes);
+	public byte[] receive (String remoteHost, int numBytes);
 
 	/**
 	 * Stops the server
+	 * @throws IOException
 	 */
-	public void stop();
+	public void stop() throws IOException;
 
 	/**
 	 * Called by the server's start() method.
@@ -59,4 +74,6 @@ public interface UDPServer
 	 * @see Runnable
 	 */
 	public void run ();
+
+	public String toString();
 }

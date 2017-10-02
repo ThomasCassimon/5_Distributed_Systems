@@ -5,6 +5,7 @@ import Interfaces.TCPServer;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
 import java.util.List;
 
 public class Server implements TCPServer
@@ -12,14 +13,14 @@ public class Server implements TCPServer
 	private boolean isRunning;
 	private int portNum;
 	private ServerSocket socket;
-	private ConnectionHandler ch;
+	private HashMap<String, ConnectionHandler> incomingConnections;
 
 	public Server (int port)
 	{
 		this.isRunning = false;
 		this.portNum = port;
 		this.socket = null;
-		this.ch = null;
+		this.incomingConnections = new HashMap<String, ConnectionHandler> ();
 	}
 
 	@Override
@@ -44,7 +45,7 @@ public class Server implements TCPServer
 	{
 		if (this.isRunning)
 		{
-			throw new RuntimeException("TCPServer::setPort():\tCan't change TCP port when server is running.");
+			throw new RuntimeException("TCPServer.setPort()\tCan't change TCP port when server is running.");
 		}
 		else
 		{
@@ -53,35 +54,35 @@ public class Server implements TCPServer
 	}
 
 	@Override
-	public void send(String data)
+	public void send(String remoteHost, String data)
 	{
 		try
 		{
-			this.ch.write(data);
+			this.incomingConnections.get(remoteHost).write(data);
 		}
 		catch (IOException ioe)
 		{
-			System.err.println("Networking.TCP.Server::send()\tAn Exception occurred while trying to send data");
+			System.err.println("Networking.TCP.Server.send()\tAn Exception was thrown while trying to send data");
 			ioe.printStackTrace();
 		}
 	}
 
 	@Override
-	public void send(byte[] data)
+	public void send(String remoteHost, byte[] data)
 	{
 		try
 		{
-			this.ch.write(data);
+			this.incomingConnections.get(remoteHost).write(data);
 		}
 		catch (IOException ioe)
 		{
-			System.err.println("Networking.TCP.Server::send()\tAn Exception occurred while trying to send data");
+			System.err.println("Networking.TCP.Server.send()\tAn Exception was thrown while trying to send data");
 			ioe.printStackTrace();
 		}
 	}
 
 	@Override
-	public void send(List<Byte> data)
+	public void send(String remoteHost, List<Byte> data)
 	{
 		byte[] dataArray = new byte [data.size()];
 		int i = 0;
@@ -94,36 +95,32 @@ public class Server implements TCPServer
 
 		try
 		{
-			this.ch.write(dataArray);
+			this.incomingConnections.get(remoteHost).write(dataArray);
 		}
 		catch (IOException ioe)
 		{
-			System.err.println("Networking.TCP.Server::send()\tAn Exception occurred while trying to send data");
+			System.err.println("Networking.TCP.Server.send()\tAn Exception was thrown while trying to send data");
 			ioe.printStackTrace();
 		}
 	}
 
 	@Override
-	public byte[] receive()
+	public byte[] receive(String remoteHost)
 	{
-		return this.ch.readBytes();
+		return this.incomingConnections.get(remoteHost).readBytes();
 	}
 
 	@Override
-	public byte[] receive(int numBytes)
+	public byte[] receive(String remoteHost, int numBytes)
 	{
-		return this.ch.readBytes(numBytes);
+		return this.incomingConnections.get(remoteHost).readBytes(numBytes);
 	}
 
 	@Override
 	public void stop() throws IOException
 	{
-		synchronized (this.socket)
-		{
-			this.socket.close();
-		}
-
 		this.isRunning = false;
+		this.socket.close();
 	}
 
 	@Override
@@ -133,20 +130,48 @@ public class Server implements TCPServer
 		{
 			while (this.isRunning && !this.socket.isClosed())
 			{
-				synchronized (this.socket)
-				{
-					Socket clientSocket = this.socket.accept();
-					this.ch = new ConnectionHandler(clientSocket);
-				}
+				Socket clientSocket = this.socket.accept();
+				ConnectionHandler ch = new ConnectionHandler(clientSocket);
 
-				Thread t = new Thread(this.ch);
+				Thread t = new Thread(ch);
 				t.start();
+
+				this.incomingConnections.put(clientSocket.getRemoteSocketAddress().toString(), ch);
 			}
 		}
 		catch (IOException ioe)
 		{
-			System.err.println("Network.TCP.Server::run()\tException occurred in call to accept()");
+			System.err.println("Network.TCP.Server.run()\tException was thrown in call to accept()");
 			ioe.printStackTrace();
 		}
+	}
+
+	public String toString()
+	{
+		StringBuilder resBuilder = new StringBuilder();
+		resBuilder.append("Server listening on port ");
+		resBuilder.append(this.portNum);
+		resBuilder.append(" (TCP)");
+		resBuilder.append('\n');
+		resBuilder.append("Running: ");
+		resBuilder.append(this.isRunning);
+		resBuilder.append('\n');
+		resBuilder.append("Connected Clients:");
+		resBuilder.append('\n');
+
+		if (this.incomingConnections.size() > 0)
+		{
+			for (String remoteHost : this.incomingConnections.keySet())
+			{
+				resBuilder.append(remoteHost);
+				resBuilder.append('\n');
+			}
+		}
+		else
+		{
+			resBuilder.append("None");
+		}
+
+		return resBuilder.toString();
 	}
 }

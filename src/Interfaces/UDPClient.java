@@ -17,8 +17,8 @@ public interface UDPClient
 
 	/**
 	 * Sets the port the client is running on.
-	 * @warning Before the port is changed, the client needs to be stopped
-	 * @warning after the port is changed, the client needs to be restarted
+	 * WARNING: Before the port is changed, the client needs to be stopped
+	 * WARNING: after the port is changed, the client needs to be restarted
 	 * @param port
 	 */
 	public void setPort (int port);

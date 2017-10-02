@@ -6,64 +6,74 @@ import java.util.List;
 public interface TCPServer extends Runnable
 {
 	/**
-	 * Starts the TCP server
+	 * Starts the TCP server.
+	 * @throws IOException  An IOException can be thrown by the ServerSocket constructor
 	 */
 	public void start () throws IOException;
 
 	/**
-	 * Returns the port that the server is running on
-	 * @return
+	 * Returns the port that the server is running on.<br>
+	 * @return  The port that the server runs on.<br>
 	 */
 	public int getPort ();
 
 	/**
-	 * Sets the port the server is running on.
-	 * @warning Before the port is changed, the server needs to be stopped
-	 * @warning after the port is changed, the server needs to be restarted
-	 * @param port
+	 *
+	 * Sets the port the server is running on.<br>
+	 * <b>WARNING:</b> Before the port is changed, the server needs to be stopped.<br>
+	 * <b>WARNING:</b> After the port is changed, the server needs to be restarted.<br>
+	 * @param   port    The new port the server should listen on.<br>
 	 */
 	public void setPort (int port);
 
 	/**
-	 * Sends a string
-	 * @param data
+	 * Sends a string. to the specified remote host.<br>
+	 * @param remoteHost    The remote host that the data should be sent to.<br>
+	 * @param data          The data to be sent.<br>
 	 */
-	public void send (String data);
+	public void send (String remoteHost, String data);
 
 	/**
-	 * Sends all bytes in the data array
-	 * @param data
+	 * Sends all bytes in the data array to the specified remote host.<br>
+	 * @param remoteHost    The remote host that the data should be sent to.<br>
+	 * @param data          The data to be sent.<br>
 	 */
-	public void send (byte[] data);
+	public void send (String remoteHost, byte[] data);
 
 	/**
-	 * Sends all bytes in the data list.
-	 * @param data
+	 * Sends all bytes in the data list to specified the remote host.<br>
+	 * @param remoteHost    The remote host that the data should be sent to.<br>
+	 * @param data          The data to be sent.<br>
 	 */
-	public void send (List<Byte> data);
+	public void send (String remoteHost, List<Byte> data);
 
 	/**
-	 * reads all bytes from the interal receive buffer
-	 * @return
+	 * Reads all bytes from the interal receive buffer.<br>
+	 * @param   remoteHost  The remote host from whose buffer we want to read.<br>  //todo: Check Grammar
+	 * @return  All data in the buffer for the specified host.<br>
 	 */
-	public byte[] receive ();
+	public byte[] receive (String remoteHost);
 
 	/**
-	 * read numBytes bytes from the internal receive buffer.
-	 * @param numBytes
-	 * @return
+	 * read numBytes bytes from the internal receive buffer.<br>
+	 * @param remoteHost    The remote host from whose buffer we want to read.<br> //todo: Check Grammar
+	 * @param numBytes      The number of bytes to read.<br>
+	 * @return              The first numBytes bytes in the inputStream for the requested host.<br>
 	 */
-	public byte[] receive (int numBytes);
+	public byte[] receive (String remoteHost, int numBytes);
 
 	/**
-	 * Stops the server
+	 * Stops the server.<br>
+	 * @throws IOException The close() method of the ServerSocket can throw an IOException
 	 */
 	public void stop() throws IOException;
 
 	/**
-	 * Called by the server's start() method.
-	 * Implements Runnable
+	 * Called by the server's start() method.<br>
+	 * Implements Runnable.<br>
 	 * @see Runnable
 	 */
 	public void run ();
+
+	public String toString();
 }
