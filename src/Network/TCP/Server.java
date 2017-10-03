@@ -57,64 +57,101 @@ public class Server implements TCPServer
 	@Override
 	public void send(String remoteHost, String data)
 	{
-		try
+		if (this.incomingConnections.containsKey(remoteHost))
 		{
-			this.incomingConnections.get(remoteHost).write(data);
+			try
+			{
+				this.incomingConnections.get(remoteHost).write(data);
+			}
+			catch (IOException ioe)
+			{
+				System.err.println("Networking.TCP.Server.send()\tAn Exception was thrown while trying to send data");
+				ioe.printStackTrace();
+			}
 		}
-		catch (IOException ioe)
+		else
 		{
-			System.err.println("Networking.TCP.Server.send()\tAn Exception was thrown while trying to send data");
-			ioe.printStackTrace();
+			System.err.println("Network.TCP.Server.receive()\tRemote host " + remoteHost + " was not found in active connections.");
 		}
 	}
 
 	@Override
 	public void send(String remoteHost, byte[] data)
 	{
-		try
+		if (this.incomingConnections.containsKey(remoteHost))
 		{
-			this.incomingConnections.get(remoteHost).write(data);
+			try
+			{
+				this.incomingConnections.get(remoteHost).write(data);
+			}
+			catch (IOException ioe)
+			{
+				System.err.println("Networking.TCP.Server.send()\tAn Exception was thrown while trying to send data");
+				ioe.printStackTrace();
+			}
 		}
-		catch (IOException ioe)
+		else
 		{
-			System.err.println("Networking.TCP.Server.send()\tAn Exception was thrown while trying to send data");
-			ioe.printStackTrace();
+			System.err.println("Network.TCP.Server.receive()\tRemote host " + remoteHost + " was not found in active connections.");
 		}
 	}
 
 	@Override
 	public void send(String remoteHost, List<Byte> data)
 	{
-		byte[] dataArray = new byte [data.size()];
-		int i = 0;
+		if (this.incomingConnections.containsKey(remoteHost))
+		{
+			byte[] dataArray = new byte [data.size()];
+			int i = 0;
 
-		for (byte b : data)
-		{
-			dataArray[i] = b;
-			i++;
-		}
+			for (byte b : data)
+			{
+				dataArray[i] = b;
+				i++;
+			}
 
-		try
-		{
-			this.incomingConnections.get(remoteHost).write(dataArray);
+			try
+			{
+				this.incomingConnections.get(remoteHost).write(dataArray);
+			}
+			catch (IOException ioe)
+			{
+				System.err.println("Network.TCP.Server.send()\tAn Exception was thrown while trying to send data");
+				ioe.printStackTrace();
+			}
 		}
-		catch (IOException ioe)
+		else
 		{
-			System.err.println("Networking.TCP.Server.send()\tAn Exception was thrown while trying to send data");
-			ioe.printStackTrace();
+			System.err.println("Network.TCP.Server.receive()\tRemote host " + remoteHost + " was not found in active connections.");
 		}
 	}
 
 	@Override
 	public byte[] receive(String remoteHost)
 	{
-		return this.incomingConnections.get(remoteHost).readBytes();
+		if (this.incomingConnections.containsKey(remoteHost))
+		{
+			return this.incomingConnections.get(remoteHost).readBytes();
+		}
+		else
+		{
+			System.err.println("Network.TCP.Server.receive()\tRemote host " + remoteHost + " was not found in active connections.");
+			return new byte[0];
+		}
 	}
 
 	@Override
 	public byte[] receive(String remoteHost, int numBytes)
 	{
-		return this.incomingConnections.get(remoteHost).readBytes(numBytes);
+		if (this.incomingConnections.containsKey(remoteHost))
+		{
+			return this.incomingConnections.get(remoteHost).readBytes(numBytes);
+		}
+		else
+		{
+			System.err.println("Network.TCP.Server.receive()\tRemote host " + remoteHost + " was not found in active connections.");
+			return new byte[0];
+		}
 	}
 
 	@Override
