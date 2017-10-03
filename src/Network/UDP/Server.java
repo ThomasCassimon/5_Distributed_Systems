@@ -3,16 +3,19 @@ package Network.UDP;
 import Interfaces.UDPServer;
 
 import java.io.IOException;
+import java.net.DatagramSocket;
 import java.util.List;
 
 public class Server implements UDPServer
 {
 	private boolean isRunning;
 	private int portNum;
+	private DatagramSocket socket;
 
 	public Server (int port)
 	{
-
+		this.isRunning = false;
+		this.portNum = portNum;
 	}
 
 	@Override
@@ -25,13 +28,13 @@ public class Server implements UDPServer
 	@Override
 	public int getPort()
 	{
-		return 0;
+		return this.portNum;
 	}
 
 	@Override
 	public void setPort(int port)
 	{
-
+		this.portNum = port;
 	}
 
 	@Override
