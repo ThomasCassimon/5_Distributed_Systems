@@ -9,7 +9,7 @@ import java.util.List;
 public class Client implements TCPClient
 {
 	private static final int BUFFER_SIZE = 1500;
-	private int serverPort;
+	private int portNum;
 	private String IP;
 	private Socket clientSocket;
 	private DataInputStream inputStream;
@@ -17,13 +17,13 @@ public class Client implements TCPClient
 
 	public Client(String IP)
 	{
-		this.serverPort = Constants.TCP_PORT;
+		this.portNum = Constants.TCP_PORT;
 		this.IP = IP;
 	}
 
 	public Client( String IP, int port)
     {
-        this.serverPort = port;
+        this.portNum = port;
         this.IP = IP;
     }
 
@@ -32,7 +32,7 @@ public class Client implements TCPClient
 	{
 		try
 		{
-			this.clientSocket = new Socket(this.IP, this.serverPort);
+			this.clientSocket = new Socket(this.IP, this.portNum);
 			inputStream = new DataInputStream(clientSocket.getInputStream());
 			outputStream = new DataOutputStream(clientSocket.getOutputStream());
 		}
@@ -46,13 +46,13 @@ public class Client implements TCPClient
 	@Override
 	public int getPort()
 	{
-		return serverPort;
+		return portNum;
 	}
 
 	@Override
 	public void setPort(int port)
 	{
-		this.serverPort = port;
+		this.portNum = port;
 	}
 
 	@Override
