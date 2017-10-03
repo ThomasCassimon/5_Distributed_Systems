@@ -1,7 +1,5 @@
 package Network.UDP;
 
-import Interfaces.UDPServer;
-
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.util.List;
