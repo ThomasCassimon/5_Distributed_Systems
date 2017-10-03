@@ -1,7 +1,5 @@
 package Network.TCP;
 
-import Interfaces.TCPServer;
-
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -170,9 +168,7 @@ public class Server implements TCPServer
 			{
 				Socket clientSocket = this.socket.accept();
 				ConnectionHandler ch = new ConnectionHandler(clientSocket);
-
-				Thread t = new Thread(ch);
-				t.start();
+				ch.start();
 
 				this.incomingConnections.put(clientSocket.getRemoteSocketAddress().toString(), ch);
 			}

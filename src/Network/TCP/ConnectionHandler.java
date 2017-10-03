@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 
-public class ConnectionHandler implements Runnable
+public class ConnectionHandler
 {
 	private static final int BUFFER_SIZE = 1 << 14; // Buffer is 16K in size
 
@@ -20,6 +20,19 @@ public class ConnectionHandler implements Runnable
 	{
 		System.out.println("Created ConnectionHandler on socket " + socket.getRemoteSocketAddress());
 		this.socket = socket;
+	}
+
+	public void start ()
+	{
+		try
+		{
+			this.in = new DataInputStream(this.socket.getInputStream());
+			this.out = new DataOutputStream(this.socket.getOutputStream());
+		}
+		catch (IOException ioe)
+		{
+			System.err.println("Network.TCP.ConnetionHandler.start()\tAn IOException was thrown while creating the Streams for the socket");
+		}
 	}
 
 	public byte[] readBytes (int numBytes)
@@ -100,20 +113,5 @@ public class ConnectionHandler implements Runnable
 	public void write (String data) throws IOException
 	{
 		this.out.write(data.getBytes());
-	}
-
-	@Override
-	public void run()
-	{
-		try
-		{
-			this.in = new DataInputStream(this.socket.getInputStream());
-			this.out = new DataOutputStream(this.socket.getOutputStream());
-		}
-		catch (IOException ioe)
-		{
-			System.err.println("Network.TCP.ConnectionHandler.run()\tAn exception was thrown when creating Data*Streams for the ConnectionHandler.");
-			ioe.printStackTrace();
-		}
 	}
 }

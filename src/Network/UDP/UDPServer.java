@@ -1,4 +1,4 @@
-package Interfaces;
+package Network.UDP;
 
 import java.io.IOException;
 import java.util.List;

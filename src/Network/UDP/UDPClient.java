@@ -1,4 +1,4 @@
-package Interfaces;
+package Network.UDP;
 
 import java.util.List;
 

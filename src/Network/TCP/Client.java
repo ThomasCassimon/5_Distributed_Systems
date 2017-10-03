@@ -1,6 +1,5 @@
 package Network.TCP;
 
-import Interfaces.TCPClient;
 import Network.Constants;
 
 import java.net.*;
