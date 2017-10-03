@@ -1,3 +1,5 @@
+import Network.Constants;
+
 import java.io.IOException;
 
 /**
@@ -7,7 +9,7 @@ public class ClientMain
 {
 	public static void main(String args[])
 	{
-		Network.TCP.Client tcpClient = new Network.TCP.Client();
+		Network.TCP.Client tcpClient = new Network.TCP.Client(Constants.TCP_SERVER_IP);
 
 		tcpClient.start();
 

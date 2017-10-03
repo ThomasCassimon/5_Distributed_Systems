@@ -11,23 +11,29 @@ public class Client implements TCPClient
 {
 	private static final int BUFFER_SIZE = 1500;
 	private int serverPort;
+	private String IP;
 	private Socket clientSocket;
 	private DataInputStream inputStream;
 	private DataOutputStream outputStream;
 
-	//todo: Add IP to connect to as argument
-	//todo: Add overload for client ctor that takes the port no. to connect to
-	public Client()
+	public Client(String IP)
 	{
 		this.serverPort = Constants.TCP_PORT;
+		this.IP = IP;
 	}
+
+	public Client( String IP, int port)
+    {
+        this.serverPort = port;
+        this.IP = IP;
+    }
 
 	@Override
 	public void start()
 	{
 		try
 		{
-			this.clientSocket = new Socket(Constants.TCP_SERVER_IP, this.serverPort);
+			this.clientSocket = new Socket(this.IP, this.serverPort);
 			inputStream = new DataInputStream(clientSocket.getInputStream());
 			outputStream = new DataOutputStream(clientSocket.getOutputStream());
 		}
