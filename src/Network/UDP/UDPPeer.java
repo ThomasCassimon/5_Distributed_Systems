@@ -1,6 +1,7 @@
 package Network.UDP;
 
 import java.io.IOException;
+import java.net.DatagramPacket;
 import java.util.List;
 
 public interface UDPPeer
@@ -49,18 +50,15 @@ public interface UDPPeer
 
 	/**
 	 * reads all bytes from the interal receive buffer
-	 * @param	remoteHost	The remote host from whose buffer we want to read.	//todo: Check Grammar
 	 * @return	All data in the buffer for the specified host.
 	 */
-	public byte[] receive (String remoteHost);
+	public byte[] receiveData ();
 
 	/**
-	 * read numBytes bytes from the internal receive buffer.
-	 * @param remoteHost	The remote host from whose buffer we want to read. //todo: Check Grammar
-	 * @param numBytes		The number of bytes to read.
-	 * @return				The first numBytes bytes in the inputStream for the requested host.
+	 * read packet from internal receive buffer.
+	 * @return				The first packet in the internal receive buffer.
 	 */
-	public byte[] receive (String remoteHost, int numBytes);
+	public DatagramPacket receivePacket ();
 
 	/**
 	 * Stops the server
