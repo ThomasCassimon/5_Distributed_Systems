@@ -1,8 +1,7 @@
 
-	package Network.UDP;
+package Network.UDP;
 
 import Network.Constants;
-
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.SocketException;
