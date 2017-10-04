@@ -73,7 +73,6 @@ public class Peer implements UDPPeer, Runnable
 	public void send(String remoteHost,
 					 List<Byte> data)
 	{
-
 	}
 
 	@Override
