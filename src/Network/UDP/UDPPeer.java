@@ -3,7 +3,7 @@ package Network.UDP;
 import java.io.IOException;
 import java.util.List;
 
-public interface UDPServer
+public interface UDPPeer
 {
 	/**
 	 * Starts the UDP server.

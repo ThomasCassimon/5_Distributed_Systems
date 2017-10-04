@@ -1,26 +1,40 @@
 package Network.UDP;
 
+import Network.Constants;
+
 import java.io.IOException;
 import java.net.DatagramSocket;
+import java.net.SocketException;
 import java.util.List;
 
-public class Server implements UDPServer
+public class Peer implements UDPPeer
 {
 	private boolean isRunning;
 	private int portNum;
 	private DatagramSocket socket;
 
-	public Server (int port)
+	public Peer(int port)
 	{
 		this.isRunning = false;
 		this.portNum = portNum;
+		this.socket = null;
 	}
 
 	@Override
-	public void start() throws
-						IOException
+	public void start()
 	{
+		try
+		{
+			socket = new DatagramSocket(Constants.UDP_PORT);
 
+
+		}
+		catch(SocketException e)
+		{
+			System.err.println("Error when making new datagram socket");
+			e.printStackTrace();
+		}
+		this.isRunning = true;
 	}
 
 	@Override
@@ -73,7 +87,11 @@ public class Server implements UDPServer
 	public void stop() throws
 						IOException
 	{
-
+		if(this.socket != null)
+		{
+			socket.close();
+		}
+		this.isRunning = false;
 	}
 
 	@Override
