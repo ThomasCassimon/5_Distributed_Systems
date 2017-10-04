@@ -55,22 +55,7 @@ public class Server implements TCPServer
 	@Override
 	public void send(String remoteHost, String data)
 	{
-		if (this.incomingConnections.containsKey(remoteHost))
-		{
-			try
-			{
-				this.incomingConnections.get(remoteHost).write(data);
-			}
-			catch (IOException ioe)
-			{
-				System.err.println("Networking.TCP.Server.send()\tAn Exception was thrown while trying to send data");
-				ioe.printStackTrace();
-			}
-		}
-		else
-		{
-			System.err.println("Network.TCP.Server.receive()\tRemote host " + remoteHost + " was not found in active connections.");
-		}
+		this.send(remoteHost, data.getBytes());
 	}
 
 	@Override

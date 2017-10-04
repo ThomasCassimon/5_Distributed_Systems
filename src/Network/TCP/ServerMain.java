@@ -1,3 +1,5 @@
+package Network.TCP;
+
 import Network.Constants;
 
 import java.io.IOException;
@@ -13,7 +15,7 @@ public class ServerMain
 		}
 		catch (IOException ioe)
 		{
-			System.err.println("ServerMain.main()\tError when trying to start TCP server.");
+			System.err.println("Network.TCP.ServerMain.main()\tError when trying to start TCP server.");
 			ioe.printStackTrace();
 		}
 
@@ -49,7 +51,7 @@ public class ServerMain
 		}
 		catch (IOException ioe)
 		{
-			System.err.println("ServerMain.main()\tError when trying to close TCP serever.");
+			System.err.println("Network.TCP.ServerMain.main()\tError when trying to close TCP serever.");
 			ioe.printStackTrace();
 		}
 	}
