@@ -1,23 +1,28 @@
+
 package Network.UDP;
 
 import Network.Constants;
 
 import java.io.IOException;
-import java.net.DatagramSocket;
-import java.net.SocketException;
+import java.net.*;
+import java.util.LinkedList;
 import java.util.List;
 
-public class Peer implements UDPPeer
+public class Peer implements UDPPeer, Runnable
 {
 	private boolean isRunning;
 	private int portNum;
 	private DatagramSocket socket;
+	private LinkedList<DatagramPacket> packetBuffer;
 
 	public Peer(int port)
 	{
 		this.isRunning = false;
 		this.portNum = portNum;
 		this.socket = null;
+		this.packetBuffer = new LinkedList<>();
+		Thread t = new Thread(this);
+		t.start();
 	}
 
 	@Override
@@ -25,41 +30,52 @@ public class Peer implements UDPPeer
 	{
 		try
 		{
-			socket = new DatagramSocket(Constants.UDP_PORT);
-
-
+			this.socket = new DatagramSocket(Constants.UDP_PORT);
 		}
 		catch(SocketException e)
 		{
-			System.err.println("Error when making new datagram socket");
+			System.err.println("Error when creating new datagramsocket");
 			e.printStackTrace();
 		}
 		this.isRunning = true;
+		this.run();
 	}
 
 	@Override
 	public int getPort()
-	{
-		return this.portNum;
-	}
+		{
+			return this.portNum;
+		}
 
 	@Override
 	public void setPort(int port)
+		{
+			this.portNum = port;
+		}
+
+	@Override
+	public void send(String remoteHost,
+					 byte[] data)
 	{
-		this.portNum = port;
+		InetAddress IP;
+		try
+		{
+			IP = InetAddress.getByName(remoteHost);
+			DatagramPacket packet = new DatagramPacket(data,0,data.length,IP,this.portNum);
+		}
+		catch(UnknownHostException e)
+		{
+			System.err.println("Error host not found when trying to send packet");
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public void send(String remoteHost,
 					 String data)
 	{
-
-	}
-
-	@Override
-	public void send(String remoteHost,
-					 byte[] data)
-	{
+		byte[] bytes = data.getBytes();
+		this.send(remoteHost,bytes);
 
 	}
 
@@ -67,25 +83,34 @@ public class Peer implements UDPPeer
 	public void send(String remoteHost,
 					 List<Byte> data)
 	{
+		byte[] bytes = new byte[data.size()];
+		int i=0;
 
+		for(byte b: data)
+		{
+			bytes[i] = b;
+			i++;
+		}
+
+		this.send(remoteHost,bytes);
 	}
 
 	@Override
-	public byte[] receive(String remoteHost)
+	public byte[] receiveData()
 	{
-		return new byte[0];
+		return receivePacket().getData();
 	}
 
 	@Override
-	public byte[] receive(String remoteHost,
-							int numBytes)
+	public DatagramPacket receivePacket()
 	{
-		return new byte[0];
+		DatagramPacket packet = packetBuffer.getFirst();
+		packetBuffer.removeFirst();
+		return packet;
 	}
 
 	@Override
-	public void stop() throws
-						IOException
+	public void stop()
 	{
 		if(this.socket != null)
 		{
@@ -97,6 +122,20 @@ public class Peer implements UDPPeer
 	@Override
 	public void run()
 	{
-
+		while(this.isRunning)
+		{
+			byte[] buffer = new byte[1500];
+			DatagramPacket packet = new DatagramPacket(buffer,buffer.length);
+			try
+			{
+				socket.receive(packet);
+				packetBuffer.add(packet);
+			}
+			catch(IOException e)
+			{
+				System.err.println("Error when trying to receive a packet");
+				e.printStackTrace();
+			}
+		}
 	}
 }
