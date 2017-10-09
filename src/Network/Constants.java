@@ -10,7 +10,8 @@ public class Constants
 {
 
 	public final static int TCP_PORT = 1997;
-	public final static int UDP_PORT = 2017;
+	//public final static int UDP_PORT_CLIENT = 2000;
+	public final static int UDP_PORT_SERVER = 2001;
 
 	/**
 	 * Server IP for testing purposes.<br>
@@ -19,6 +20,7 @@ public class Constants
 	 * <img src="http://godlessmom.com/wp-content/uploads/2015/03/youre-going-to-have-a-bad-time.png" alt="You're going to have a bad time.">
 	 */
 	public final static String TCP_SERVER_IP = "localhost";
+	public final static String UDP_SERVER_IP = "localhost";
 
 
 	/**
