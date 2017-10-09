@@ -6,7 +6,7 @@ import java.net.*;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Server implements UDPPeer, Runnable
+public class Server implements UDPServer, Runnable
 {
 	private boolean isRunning;
 	private int portNum;
@@ -138,7 +138,6 @@ public class Server implements UDPPeer, Runnable
 		{
 			return null;
 		}
-
 	}
 
 	@Override

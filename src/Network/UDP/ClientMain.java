@@ -13,7 +13,15 @@ public class ClientMain
     public static void main(String args[])
     {
         Client client = new Client();
-		DatagramPacket packet;
+	    try
+	    {
+		    client.start();
+	    }
+	    catch (IOException e)
+	    {
+		    e.printStackTrace();
+	    }
+	    DatagramPacket packet;
 		byte[] data;
 
 		System.out.println("Started...");
@@ -28,9 +36,9 @@ public class ClientMain
             e.printStackTrace();
         }
 
-        client.send(Constants.UDP_SERVER_IP,Constants.UDP_PORT_SERVER,"Hello, world!".getBytes());
+        client.send("127.0.0.1", 4800, "Hello, world!".getBytes());
 
-        System.out.println("Data send");
+        System.out.println("Data sent");
 
 		try
 		{

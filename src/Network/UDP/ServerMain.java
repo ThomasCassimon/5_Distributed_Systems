@@ -12,7 +12,7 @@ public class ServerMain
 {
     public static void main(String args[])
     {
-        Server server = new Server(Constants.UDP_PORT_SERVER);
+        Server server = new Server(4800);
 
 		DatagramPacket packet;
         byte[] data;
@@ -31,7 +31,7 @@ public class ServerMain
         data = packet.getData();
         System.out.println("Data received...");
 
-        System.out.println("Data: " + data.toString());
+        System.out.println("Data: " + new String(data, Constants.ENCODING));
 
 
 		try
@@ -45,7 +45,7 @@ public class ServerMain
 		}
 
 
-        server.send(packet.getAddress().getHostAddress(),packet.getPort(),data);
+        server.send("127.0.0.1", 5000,data);
 
 
         server.stop();
