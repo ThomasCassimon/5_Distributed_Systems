@@ -4,14 +4,12 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.util.List;
 
-public interface UDPPeer
+public interface UDPClient
 {
 	/**
 	 * Starts the UDP server.
-	 * @throws IOException
 	 */
-	public void start () throws
-						 IOException;
+	public void start ();
 
 	/**
 	 * Sends a string

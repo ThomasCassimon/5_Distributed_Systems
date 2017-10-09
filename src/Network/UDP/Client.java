@@ -8,27 +8,32 @@ import java.util.List;
 /**
  * Created by Astrid on 09-Oct-17.
  */
-public class Client implements UDPPeer, Runnable
+public class Client implements UDPClient, Runnable
 {
-	private boolean isRunning;
 	private DatagramSocket socket;
 	private LinkedList<DatagramPacket> packetBuffer;
 
 	public Client()
 	{
-		this.isRunning = false;
 		this.socket = null;
 		this.packetBuffer = new LinkedList<DatagramPacket>();
 	}
 
 	@Override
-	public void start() throws IOException
+	public void start()
 	{
-		this.socket = new DatagramSocket();
-		System.out.println("Receive socket created");
-		this.isRunning = true;
-		Thread t = new Thread (this);
-		t.start();
+		try
+		{
+			this.socket = new DatagramSocket();
+			
+			Thread t = new Thread (this);
+			t.start();
+		}
+		catch (SocketException e)
+		{
+			System.err.println("An Exception was thrown while creating a new DatagramSocket.");
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -36,27 +41,14 @@ public class Client implements UDPPeer, Runnable
 					 int port,
 					 byte[] data)
 	{
-		DatagramPacket packet = null;
 		try
 		{
-			packet = new DatagramPacket(data,0,data.length,InetAddress.getByName(remoteHost),port);
+			this.socket.send(new DatagramPacket(data,0, data.length, InetAddress.getByName(remoteHost), port));
 		}
 		catch(UnknownHostException e)
 		{
 			System.err.println("Error host not found when trying to send packet");
 			e.printStackTrace();
-		}
-
-		try
-		{
-			if (packet != null)
-			{
-				this.socket.send(packet);
-			}
-			else
-			{
-				throw new RuntimeException("Tried sending a NULL packet");
-			}
 		}
 		catch(IOException e)
 		{
@@ -101,7 +93,7 @@ public class Client implements UDPPeer, Runnable
 		}
 		else
 		{
-			return null;
+			throw new RuntimeException("Packet received was null");
 		}
 	}
 
@@ -116,7 +108,7 @@ public class Client implements UDPPeer, Runnable
 		}
 		else
 		{
-			return null;
+			throw new RuntimeException("Packet buffer was empty");
 		}
 	}
 
@@ -127,29 +119,25 @@ public class Client implements UDPPeer, Runnable
 		{
 			this.socket.close();
 		}
-		this.isRunning = false;
 	}
 
 	@Override
 	public void run()
 	{
-		System.out.println("Running: " + this.isRunning);
-		System.out.println("Closed: " + this.socket.isClosed());
-		while(this.isRunning && !this.socket.isClosed())
+		while(!this.socket.isClosed())
 		{
 			byte[] buffer = new byte[1500];
-			DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+			DatagramPacket incomingPacket = new DatagramPacket(buffer, buffer.length);
 			try
 			{
-				this.socket.receive(packet);
-				this.packetBuffer.add(packet);
+				this.socket.receive(incomingPacket);
+				this.packetBuffer.add(incomingPacket);
 			}
 			catch(IOException e)
 			{
 				System.err.println("Error when trying to receive a packet");
 				e.printStackTrace();
 			}
-			System.out.println("Packet received");
 		}
 	}
 }

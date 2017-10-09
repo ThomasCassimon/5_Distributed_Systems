@@ -7,6 +7,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class ConnectionHandler
 {
@@ -14,6 +15,7 @@ public class ConnectionHandler
 
 	private DataInputStream in;
 	private DataOutputStream out;
+	private LinkedList<Byte> inputBuffer;
 	private Socket socket;
 
 	public ConnectionHandler (Socket socket)
@@ -59,28 +61,31 @@ public class ConnectionHandler
 		try
 		{
 			byte[] bytes = new byte [BUFFER_SIZE];
-
-			while (this.in.read(bytes) > 0)
+			
+			while (this.in.available() > 0)
 			{
-				for (byte b : bytes)
+				int numBytes = this.in.read(bytes);
+
+				for (int i = 0; i < numBytes; i++)
 				{
-					tmpBuffer.add(b);
+					tmpBuffer.add(bytes[i]);
 				}
 			}
+				
 		}
 		catch (IOException ioe)
 		{
 			System.err.println("Networking.TCP.ConnectionHandler.readBytes()\tAn exception was thrown while trying to read from DataInputStream");
 			ioe.printStackTrace();
 		}
-
+		
 		byte[] bytes = new byte [tmpBuffer.size()];
 
 		for (int i = 0; i < tmpBuffer.size(); i++)
 		{
 			bytes[i] = tmpBuffer.get(i);
 		}
-
+		
 		return bytes;
 	}
 
@@ -100,8 +105,7 @@ public class ConnectionHandler
 		{
 			System.err.println("ConnectionHandler.hasData()\tAn IOException was thrown when checking if the ConnectionHandler has any data");
 		}
-
-
+		
 		return avail > 0;
 	}
 
@@ -113,5 +117,13 @@ public class ConnectionHandler
 	public void write (String data) throws IOException
 	{
 		this.out.write(data.getBytes());
+	}
+	
+	public void emptyBuffer () throws IOException
+	{
+		while (this.in.available() > 0)
+		{
+		
+		}
 	}
 }
