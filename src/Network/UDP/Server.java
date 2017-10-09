@@ -19,6 +19,7 @@ public class Server implements UDPPeer, Runnable
 		this.portNum = portNum;
 		this.socket = null;
 		this.packetBuffer = new LinkedList<>();
+		this.start();
 		Thread t = new Thread(this);
 		t.start();
 	}
@@ -26,6 +27,7 @@ public class Server implements UDPPeer, Runnable
 	@Override
 	public void start()
 	{
+		System.out.println("Started");
 		try
 		{
 
@@ -38,7 +40,7 @@ public class Server implements UDPPeer, Runnable
 			e.printStackTrace();
 		}
 		this.isRunning = true;
-		this.run();
+		//this.run();
 	}
 
 	@Override
@@ -152,15 +154,20 @@ public class Server implements UDPPeer, Runnable
 	@Override
 	public void run()
 	{
-		while(this.isRunning)
+		//System.out.println("Running: " + isRunning);
+		while(this.isRunning && !socket.isClosed())
 		{
+			//System.out.println("Closed: " + socket.isClosed());
+			//System.out.println("RUNNING");
 			byte[] buffer = new byte[1500];
 			DatagramPacket packet = new DatagramPacket(buffer,buffer.length);
 			try
 			{
+				System.out.println("CHECKING FOR DATA");
+				System.out.println("Closed: " + socket.isClosed());
 				socket.receive(packet);
 				packetBuffer.add(packet);
-				System.out.println("packet received");
+				System.out.println("PACKET RECEIVED");
 			}
 			catch(IOException e)
 			{

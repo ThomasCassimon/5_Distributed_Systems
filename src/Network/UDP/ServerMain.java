@@ -30,7 +30,19 @@ public class ServerMain
         packet = server.receivePacket();
         data = packet.getData();
         System.out.println("Data received...");
-        System.out.println(data);
+
+        System.out.println("Data: " + data.toString());
+
+
+		try
+		{
+			System.out.println("Press enter to send data...");
+			System.in.read();
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
 
 
         server.send(packet.getAddress().getHostAddress(),packet.getPort(),data);

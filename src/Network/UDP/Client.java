@@ -42,7 +42,7 @@ public class Client implements UDPPeer, Runnable
 	@Override
 	public void start() throws IOException
 	{
-		this.run();
+		this.isRunning = true;
 	}
 
 	@Override
@@ -158,7 +158,9 @@ public class Client implements UDPPeer, Runnable
 	@Override
 	public void run()
 	{
-		while(this.isRunning)
+		System.out.println("Running: " + isRunning);
+		System.out.println("Closed: " + socket.isClosed());
+		while(this.isRunning && !socket.isClosed())
 		{
 			byte[] buffer = new byte[1500];
 			DatagramPacket packet = new DatagramPacket(buffer,buffer.length);
@@ -172,6 +174,7 @@ public class Client implements UDPPeer, Runnable
 				System.err.println("Error when trying to receive a packet");
 				e.printStackTrace();
 			}
+			System.out.println("Packet received");
 		}
 	}
 }

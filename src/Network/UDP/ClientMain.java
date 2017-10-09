@@ -28,7 +28,7 @@ public class ClientMain
             e.printStackTrace();
         }
 
-        client.send(Constants.UDP_SERVER_IP,Constants.UDP_PORT_SERVER,"Hello, world!");
+        client.send(Constants.UDP_SERVER_IP,Constants.UDP_PORT_SERVER,"Hello, world!".getBytes());
 
         System.out.println("Data send");
 
