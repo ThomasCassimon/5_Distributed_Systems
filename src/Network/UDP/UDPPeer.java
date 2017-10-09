@@ -32,21 +32,21 @@ public interface UDPPeer
 	 * @param remoteHost	The remote host that the data should be sent to.
 	 * @param data			The data to be sent.
 	 */
-	public void send (String remoteHost, String data);
+	public void send (String remoteHost,int port, String data);
 
 	/**
 	 * Sends all bytes in the data array.
 	 * @param remoteHost	The remote host that the data should be sent to.
 	 * @param data			The data to be sent.
 	 */
-	public void send (String remoteHost, byte[] data);
+	public void send (String remoteHost,int port, byte[] data);
 
 	/**
 	 * Sends all bytes in the data list.
 	 * @param remoteHost	The remote host that the data should be sent to.
 	 * @param data			The data to be sent.
 	 */
-	public void send (String remoteHost, List<Byte> data);
+	public void send (String remoteHost,int port, List<Byte> data);
 
 	/**
 	 * reads all bytes from the interal receive buffer
