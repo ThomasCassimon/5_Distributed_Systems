@@ -13,7 +13,7 @@ public class ServerMain
 		Network.TCP.Server tcpServer = new Network.TCP.Server(Network.Constants.TCP_PORT);
 		Scanner scanner = new Scanner(System.in);
 		
-		File fileObj = new File ("C:\\Users\\Thomas\\Dropbox\\BOWTIES ARE COOL\\GIFs\\FuckYouVogel.gif");
+		File fileObj = new File ("giphy.gif");
 		byte[] fileData = new byte [1];
 		try
 		{

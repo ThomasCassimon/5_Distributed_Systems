@@ -25,8 +25,8 @@ public class File
 	 * @return      A byte array containing all bytes of the file we read.
 	 * @throws IOException  An IOException can be thrown by the FileChannel.read() method, or because the file is too large.
 	 */
-	public byte[] read () throws
-	                                        IOException
+	public byte[] read ()   throws
+							IOException
 	{
 		FileInputStream inputStream = new FileInputStream(this.filename);
 
@@ -57,9 +57,9 @@ public class File
 	 * @param numBytes  The amount of bytes to read.
 	 * @return      A byte array containing all bytes of the file we read.
 	 * @throws IOException  An IOException can be thrown by the FileChannel.read() method, or because the file is too large.
-	 */
-	public byte[] read (int numBytes) throws
-	                                        IOException
+	 
+	public byte[] read (int numBytes)   throws
+										IOException
 	{
 		FileInputStream inputStream = new FileInputStream(this.filename);
 
@@ -72,12 +72,19 @@ public class File
 
 		channel = channel.position(this.filePos);
 		
+		System.out.println("Allocating byte buffer");
+		
 		ByteBuffer buffer =  ByteBuffer.allocate(numBytes);
 
-		while (channel.position() < channel.size())
-		{
+		System.out.println("Allocated Byte buffer");
+		
+		//while (channel.position() < channel.size())
+		//{
+			System.out.println("Channel.position: " + channel.position() + " Channel.size(): " + channel.size());
 			channel.read(buffer);
-		}
+		//}
+		
+		System.out.println("Read bytes");
 		
 		this.filePos = min(this.filePos + numBytes, channel.size());
 
@@ -85,7 +92,8 @@ public class File
 
 		return buffer.array();
 	}
-
+	*/
+	
 	/**
 	 * Uses the new Java NIO API to write files as fast as possible.
 	 * Creates a file if it does not yet exist.
@@ -107,7 +115,7 @@ public class File
 	 * Uses the new Java NIO API to append to files as fast as possible.
 	 * @param data  The data to be appended to the file.
 	 * @throws IOException An IOException can be thrown by the FileOutputStream Constructor, the FileChannel.write or the FileChannel.close method.
-	 */
+	 
 	public void append (byte[] data) throws
 														 IOException
 	{
@@ -121,7 +129,8 @@ public class File
 
 		channel.close();
 	}
-
+	*/
+	
 	/**
 	 * Segments a file in a number of segments of segmentSize bytes.
 	 * @param input         The input data to be split into segments.

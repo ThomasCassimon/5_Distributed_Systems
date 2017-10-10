@@ -30,7 +30,7 @@ public class ClientMain
 		
 		System.out.println("Received: '" + new String(fileData, Constants.ENCODING) + "'");
 		
-		File fileObj = new File ("C:\\Users\\Thomas\\FuckYouVogel.gif");
+		File fileObj = new File ("result_TCP.gif");
 		try
 		{
 			fileObj.write(fileData);
