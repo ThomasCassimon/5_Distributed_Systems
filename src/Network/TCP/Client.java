@@ -1,35 +1,50 @@
 package Network.TCP;
 
-import Interfaces.TCPClient;
 import Network.Constants;
 
 import java.net.*;
 import java.io.*;
+import java.util.LinkedList;
 import java.util.List;
 
-public class Client implements TCPClient
+public class Client implements TCPClient, Runnable
 {
-	private static final int BUFFER_SIZE = 1500;
-	private int serverPort;
+	private boolean stop;
+	private int portNum;
+	private String IP;
 	private Socket clientSocket;
-	private DataInputStream inputStream;
-	private DataOutputStream outputStream;
+	private DataInputStream in;
+	private DataOutputStream out;
+	private LinkedList<Byte> buffer;
+	private Thread ownThread;
 
-	//todo: Add IP to connect to as argument
-	//todo: Add overload for client ctor that takes the port no. to connect to
-	public Client()
+	public Client(String IP)
 	{
-		this.serverPort = Constants.TCP_PORT;
+		this.stop = false;
+		this.portNum = Constants.TCP_PORT;
+		this.IP = IP;
+		this.buffer = new LinkedList<Byte>();
 	}
+
+	public Client(String IP,
+	              int port)
+    {
+    	this.stop = false;
+        this.portNum = port;
+        this.IP = IP;
+	    this.buffer = new LinkedList<Byte>();
+    }
 
 	@Override
 	public void start()
 	{
 		try
 		{
-			this.clientSocket = new Socket(Constants.TCP_SERVER_IP, this.serverPort);
-			inputStream = new DataInputStream(clientSocket.getInputStream());
-			outputStream = new DataOutputStream(clientSocket.getOutputStream());
+			this.clientSocket = new Socket(this.IP, this.portNum);
+			in = new DataInputStream(clientSocket.getInputStream());
+			out = new DataOutputStream(clientSocket.getOutputStream());
+			this.ownThread = new Thread(this);
+			this.ownThread.start();
 		}
 		catch(IOException e)
 		{
@@ -39,23 +54,11 @@ public class Client implements TCPClient
 	}
 
 	@Override
-	public int getPort()
-	{
-		return serverPort;
-	}
-
-	@Override
-	public void setPort(int port)
-	{
-		this.serverPort = port;
-	}
-
-	@Override
 	public void send(byte[] data)
 	{
 		try
 		{
-			outputStream.write(data);
+			out.write(data);
 		}
 		catch(IOException e)
 		{
@@ -69,14 +72,14 @@ public class Client implements TCPClient
 	{
 		byte[] arrayData = new byte[data.size()];
 
-		for (int i = 0; i<data.size();i++)
+		for (int i = 0; i < data.size(); i++)
 		{
 			arrayData[i] = data.get(i);
 		}
 
 		try
 		{
-			outputStream.write(arrayData);
+			out.write(arrayData);
 		}
 		catch(IOException e)
 		{
@@ -88,28 +91,11 @@ public class Client implements TCPClient
 	@Override
 	public byte[] receive()
 	{
-		int i;
-		try
+		byte[] data = new byte [this.buffer.size()];
+		
+		for (int i = 0; i < this.buffer.size(); i++)
 		{
-			i = inputStream.available();
-		}
-		catch (IOException e)
-		{
-			System.err.println("Error when estimating length of inputstream");
-			e.printStackTrace();
-		}
-
-		byte[] data = new byte[BUFFER_SIZE];
-
-
-		try
-		{
-			 inputStream.read(data);
-		}
-		catch (IOException e)
-		{
-			System.err.println("Error when reading byte from input stream");
-			e.printStackTrace();
+			data[i] = this.buffer.get(i);
 		}
 
 		return data;
@@ -119,15 +105,10 @@ public class Client implements TCPClient
 	public byte[] receive(int numBytes)
 	{
 		byte[] data = new byte[numBytes];
-
-		try
+		
+		for (int i = 0; i < numBytes; i++)
 		{
-			inputStream.read(data);
-		}
-		catch(IOException e)
-		{
-			System.err.println("Error when reading certain amount of bytes from inputstream");
-			e.printStackTrace();
+			data[i] = this.buffer.get(i);
 		}
 
 		return data;
@@ -138,12 +119,41 @@ public class Client implements TCPClient
 	{
 		try
 		{
+			this.stop = true;
 			clientSocket.close();
 		}
 		catch(IOException e)
 		{
 			System.err.println("Error when closing client socket");
 			e.printStackTrace();
+		}
+	}
+	
+	@Override
+	public void run()
+	{
+		while (!this.stop)
+		{
+			try
+			{
+				if (this.in.available() > 0)
+				{
+					System.out.println("CLIENT " + this.in.available() + " Bytes available to TCP");
+					byte[] data = new byte [this.in.available()];
+					int numBytes = this.in.read(data);
+					
+					for (int i = 0; i < numBytes; i++)
+					{
+						this.buffer.add(data[i]);
+					}
+					
+					System.out.println("CLIENT Added " + data.length + " Bytes to internal buffer.");
+				}
+			}
+			catch (IOException ioe)
+			{
+				System.err.println("An exception occurred while trying to read data.");
+			}
 		}
 	}
 }

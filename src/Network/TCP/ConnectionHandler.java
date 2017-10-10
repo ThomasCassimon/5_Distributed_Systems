@@ -7,68 +7,64 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class ConnectionHandler implements Runnable
 {
 	private static final int BUFFER_SIZE = 1 << 14; // Buffer is 16K in size
 
+	private boolean stop;
 	private DataInputStream in;
 	private DataOutputStream out;
+	private LinkedList<Byte> inputBuffer;
 	private Socket socket;
+	private Thread ownThread;
 
 	public ConnectionHandler (Socket socket)
 	{
 		System.out.println("Created ConnectionHandler on socket " + socket.getRemoteSocketAddress());
+		this.stop = false;
 		this.socket = socket;
+		this.inputBuffer = new LinkedList<Byte>();
+	}
+
+	public void start ()
+	{
+		try
+		{
+			this.in = new DataInputStream(this.socket.getInputStream());
+			this.out = new DataOutputStream(this.socket.getOutputStream());
+			this.ownThread = new Thread (this);
+			this.ownThread.start();
+		}
+		catch (IOException ioe)
+		{
+			System.err.println("Network.TCP.ConnetionHandler.start()\tAn IOException was thrown while creating the Streams for the socket");
+		}
 	}
 
 	public byte[] readBytes (int numBytes)
 	{
-		byte[] tmpBuffer = new byte [numBytes];
-
-		try
+		byte[] data = new byte [numBytes];
+		
+		for (int i = 0; i < numBytes; i++)
 		{
-			this.in.read(tmpBuffer, 0, numBytes);
+			data[i] = this.inputBuffer.get(i);
 		}
-		catch (IOException ioe)
-		{
-			System.err.println("Networking.TCP.ConnectionHandler.readBytes()\tAn exception was thrown while trying to read from DataInputStream");
-			ioe.printStackTrace();
-		}
-
-		return tmpBuffer;
+		
+		return data;
 	}
 
 	public byte[] readBytes()
 	{
-		ArrayList<Byte> tmpBuffer = new ArrayList<Byte> (BUFFER_SIZE);
-
-		try
+		byte[] data = new byte [this.inputBuffer.size()];
+		
+		for (int i = 0; i < this.inputBuffer.size(); i++)
 		{
-			byte[] bytes = new byte [BUFFER_SIZE];
-
-			while (this.in.read(bytes) > 0)
-			{
-				for (byte b : bytes)
-				{
-					tmpBuffer.add(b);
-				}
-			}
+			data[i] = this.inputBuffer.get(i);
 		}
-		catch (IOException ioe)
-		{
-			System.err.println("Networking.TCP.ConnectionHandler.readBytes()\tAn exception was thrown while trying to read from DataInputStream");
-			ioe.printStackTrace();
-		}
-
-		byte[] bytes = new byte [tmpBuffer.size()];
-
-		for (int i = 0; i < tmpBuffer.size(); i++)
-		{
-			bytes[i] = tmpBuffer.get(i);
-		}
-
-		return bytes;
+		
+		return data;
 	}
 
 	public String readString()
@@ -78,18 +74,7 @@ public class ConnectionHandler implements Runnable
 
 	boolean hasData ()
 	{
-		int avail = 0;
-		try
-		{
-			avail = this.in.available();
-		}
-		catch (IOException ioe)
-		{
-			System.err.println("ConnectionHandler.hasData()\tAn IOException was thrown when checking if the ConnectionHandler has any data");
-		}
-
-
-		return avail > 0;
+		return this.inputBuffer.size() > 0;
 	}
 
 	public void write (byte[] data) throws IOException
@@ -101,19 +86,42 @@ public class ConnectionHandler implements Runnable
 	{
 		this.out.write(data.getBytes());
 	}
-
-	@Override
-	public void run()
+	
+	public void stop ()
 	{
 		try
 		{
-			this.in = new DataInputStream(this.socket.getInputStream());
-			this.out = new DataOutputStream(this.socket.getOutputStream());
+			this.socket.close();
 		}
-		catch (IOException ioe)
+		catch (IOException e)
 		{
-			System.err.println("Network.TCP.ConnectionHandler.run()\tAn exception was thrown when creating Data*Streams for the ConnectionHandler.");
-			ioe.printStackTrace();
+			System.err.println("An exception occurred while trying to close socket.");
+			e.printStackTrace();
+		}
+	}
+	
+	@Override
+	public void run()
+	{
+		while (!this.stop)
+		{
+			try
+			{
+				if (this.in.available() > 0)
+				{
+					byte[] data = new byte [this.in.available()];
+					int numBytes = this.in.read(data);
+					
+					for (int i = 0; i < numBytes; i++)
+					{
+						this.inputBuffer.add(data[i]);
+					}
+				}
+			}
+			catch (IOException ioe)
+			{
+				System.err.println("An exception occurred while trying to read data.");
+			}
 		}
 	}
 }

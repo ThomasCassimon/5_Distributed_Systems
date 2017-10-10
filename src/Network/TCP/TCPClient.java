@@ -1,27 +1,13 @@
-package Interfaces;
+package Network.TCP;
 
 import java.util.List;
 
-public interface UDPClient
+public interface TCPClient
 {
 	/**
-	 * Starts the UDP client
+	 * Starts the TCP client
 	 */
 	public void start ();
-
-	/**
-	 * Returns the port that the client is running on
-	 * @return
-	 */
-	public int getPort ();
-
-	/**
-	 * Sets the port the client is running on.
-	 * WARNING: Before the port is changed, the client needs to be stopped
-	 * WARNING: after the port is changed, the client needs to be restarted
-	 * @param port
-	 */
-	public void setPort (int port);
 
 	/**
 	 * Sends all bytes in the data array

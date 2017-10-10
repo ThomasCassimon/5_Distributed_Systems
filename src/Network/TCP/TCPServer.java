@@ -1,4 +1,4 @@
-package Interfaces;
+package Network.TCP;
 
 import java.io.IOException;
 import java.util.List;
@@ -10,21 +10,6 @@ public interface TCPServer extends Runnable
 	 * @throws IOException	An IOException can be thrown by the ServerSocket constructor
 	 */
 	public void start () throws IOException;
-
-	/**
-	 * Returns the port that the server is running on.<br>
-	 * @return	The port that the server runs on.<br>
-	 */
-	public int getPort ();
-
-	/**
-	 *
-	 * Sets the port the server is running on.<br>
-	 * <b>WARNING:</b> Before the port is changed, the server needs to be stopped.<br>
-	 * <b>WARNING:</b> After the port is changed, the server needs to be restarted.<br>
-	 * @param	port	The new port the server should listen on.<br>
-	 */
-	public void setPort (int port);
 
 	/**
 	 * Sends a string. to the specified remote host.<br>

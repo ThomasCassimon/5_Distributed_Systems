@@ -1,7 +1,5 @@
 package Network.TCP;
 
-import Interfaces.TCPServer;
-
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -11,14 +9,15 @@ import java.util.Set;
 
 public class Server implements TCPServer
 {
-	private boolean isRunning;
+	private boolean stop;
 	private int portNum;
 	private ServerSocket socket;
 	private HashMap<String, ConnectionHandler> incomingConnections;
+	private Thread ownThread;
 
 	public Server (int port)
 	{
-		this.isRunning = false;
+		this.stop = false;
 		this.portNum = port;
 		this.socket = null;
 		this.incomingConnections = new HashMap<String, ConnectionHandler> ();
@@ -30,49 +29,14 @@ public class Server implements TCPServer
 	{
 		this.socket = new ServerSocket(this.portNum);
 
-		Thread t = new Thread(this);
-		t.start();
-		this.isRunning = true;
-	}
-
-	@Override
-	public int getPort()
-	{
-		return this.portNum;
-	}
-
-	@Override
-	public void setPort(int port)
-	{
-		if (this.isRunning)
-		{
-			throw new RuntimeException("TCPServer.setPort()\tCan't change TCP port when server is running.");
-		}
-		else
-		{
-			this.portNum = port;
-		}
+		this.ownThread = new Thread(this);
+		this.ownThread.start();
 	}
 
 	@Override
 	public void send(String remoteHost, String data)
 	{
-		if (this.incomingConnections.containsKey(remoteHost))
-		{
-			try
-			{
-				this.incomingConnections.get(remoteHost).write(data);
-			}
-			catch (IOException ioe)
-			{
-				System.err.println("Networking.TCP.Server.send()\tAn Exception was thrown while trying to send data");
-				ioe.printStackTrace();
-			}
-		}
-		else
-		{
-			System.err.println("Network.TCP.Server.receive()\tRemote host " + remoteHost + " was not found in active connections.");
-		}
+		this.send(remoteHost, data.getBytes());
 	}
 
 	@Override
@@ -157,7 +121,6 @@ public class Server implements TCPServer
 	@Override
 	public void stop() throws IOException
 	{
-		this.isRunning = false;
 		this.socket.close();
 	}
 
@@ -166,20 +129,18 @@ public class Server implements TCPServer
 	{
 		try
 		{
-			while (this.isRunning && !this.socket.isClosed())
+			while (!this.stop && !this.socket.isClosed())
 			{
 				Socket clientSocket = this.socket.accept();
 				ConnectionHandler ch = new ConnectionHandler(clientSocket);
-
-				Thread t = new Thread(ch);
-				t.start();
+				ch.start();
 
 				this.incomingConnections.put(clientSocket.getRemoteSocketAddress().toString(), ch);
 			}
 		}
 		catch (IOException ioe)
 		{
-			System.err.println("Network.TCP.Server.run()\tException was thrown in call to accept()");
+			System.err.println("Network.TCP.Server.run()\tException was thrown in call to accept() or close()");
 			ioe.printStackTrace();
 		}
 	}
@@ -202,7 +163,7 @@ public class Server implements TCPServer
 		resBuilder.append(" (TCP)");
 		resBuilder.append('\n');
 		resBuilder.append("Running: ");
-		resBuilder.append(this.isRunning);
+		resBuilder.append(this.stop);
 		resBuilder.append('\n');
 		resBuilder.append("Connected Clients:");
 		resBuilder.append('\n');
