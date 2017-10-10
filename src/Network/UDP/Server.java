@@ -11,6 +11,7 @@ public class Server implements UDPServer, Runnable
 	private int portNum;
 	private DatagramSocket socket;
 	private LinkedList<DatagramPacket> packetBuffer;
+	private Thread thread;
 
 	public Server(int portNum)
 	{
@@ -32,8 +33,8 @@ public class Server implements UDPServer, Runnable
 			e.printStackTrace();
 		}
 		
-		Thread t = new Thread(this);
-		t.start();
+		thread = new Thread(this);
+		thread.start();
 	}
 
 	@Override
@@ -74,6 +75,8 @@ public class Server implements UDPServer, Runnable
 			System.err.println("Error when sending packet");
 			e.printStackTrace();
 		}
+		//Client.printByteArray(data);
+		System.out.println("");
 	}
 
 	@Override
@@ -132,10 +135,11 @@ public class Server implements UDPServer, Runnable
 	@Override
 	public void stop()
 	{
-		if(this.socket != null)
+		if (this.socket != null)
 		{
 			socket.close();
 		}
+
 	}
 
 	@Override

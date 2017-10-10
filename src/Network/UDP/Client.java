@@ -25,6 +25,7 @@ public class Client implements UDPClient, Runnable
 		try
 		{
 			this.socket = new DatagramSocket();
+			this.socket.setReceiveBufferSize(1 << 17);
 			
 			Thread t = new Thread (this);
 			t.start();
@@ -33,6 +34,19 @@ public class Client implements UDPClient, Runnable
 		{
 			System.err.println("An Exception was thrown while creating a new DatagramSocket.");
 			e.printStackTrace();
+		}
+	}
+
+	public static void printByteArray (byte[] data)
+	{
+		for (int i = 0; i < data.length; i++)
+		{
+			System.out.print(data[i] + " ");
+
+			if ((i % 8) == 0)
+			{
+				System.out.print('\n');
+			}
 		}
 	}
 
@@ -85,25 +99,18 @@ public class Client implements UDPClient, Runnable
 	@Override
 	public byte[] receiveData()
 	{
-		DatagramPacket packet = this.receivePacket();
-
-		if(packet != null)
-		{
-			return this.receivePacket().getData();
-		}
-		else
-		{
-			throw new RuntimeException("Packet received was null");
-		}
+		return this.receivePacket().getData();
 	}
 
 	@Override
 	public DatagramPacket receivePacket()
 	{
+		//System.out.println("BUFFERLENGTH" + packetBuffer.size());
 		if(!this.packetBuffer.isEmpty())
 		{
-			DatagramPacket packet = this.packetBuffer.getFirst();
-			this.packetBuffer.removeFirst();
+			DatagramPacket packet = this.packetBuffer.get(0);
+			//Client.printByteArray(this.packetBuffer.get(0).getData());
+			this.packetBuffer.remove(0);
 			return packet;
 		}
 		else
@@ -126,12 +133,18 @@ public class Client implements UDPClient, Runnable
 	{
 		while(!this.socket.isClosed())
 		{
-			byte[] buffer = new byte[1500];
+			byte[] buffer = new byte[500];
 			DatagramPacket incomingPacket = new DatagramPacket(buffer, buffer.length);
 			try
 			{
 				this.socket.receive(incomingPacket);
+				System.out.println("Received " + incomingPacket.getData().length + " Bytes");
 				this.packetBuffer.add(incomingPacket);
+				System.out.println("Packetbuffer size " + this.packetBuffer.size());
+			}
+			catch (SocketException se)
+			{
+				se.printStackTrace();
 			}
 			catch(IOException e)
 			{
@@ -139,5 +152,15 @@ public class Client implements UDPClient, Runnable
 				e.printStackTrace();
 			}
 		}
+	}
+
+	public boolean bufferEmpty()
+	{
+		return packetBuffer.isEmpty();
+	}
+
+	public int getBufferLength()
+	{
+		return packetBuffer.size();
 	}
 }
