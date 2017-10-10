@@ -38,11 +38,17 @@ public class ServerMain
 		try
 		{
 			byte[] dataA = file.read();
-			byte[][] dataS = File.segment(dataA,500);
 
+			byte[][] dataS = File.segment(dataA,500);
+			System.out.println("NUMBER SEGMENTS: " + dataS.length);
+
+			int i = 0;
 			for(byte[] bytes: dataS)
 			{
 				server.send(dgPacket.getAddress().getHostAddress(),dgPacket.getPort(),bytes);
+				System.out.println("SEGMENT " + i);
+				i++;
+
 			}
 		}
 		catch(IOException e)
@@ -50,6 +56,8 @@ public class ServerMain
 			System.err.println("Exception when reading file");
 			e.printStackTrace();
 		}
+
+
 	    
         //server.send("127.0.0.1", dgPacket.getPort(), "Hello, world!");
         

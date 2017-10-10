@@ -25,6 +25,7 @@ public class Client implements UDPClient, Runnable
 		try
 		{
 			this.socket = new DatagramSocket();
+			this.socket.setReceiveBufferSize(1 << 17);
 			
 			Thread t = new Thread (this);
 			t.start();
@@ -33,6 +34,19 @@ public class Client implements UDPClient, Runnable
 		{
 			System.err.println("An Exception was thrown while creating a new DatagramSocket.");
 			e.printStackTrace();
+		}
+	}
+
+	public static void printByteArray (byte[] data)
+	{
+		for (int i = 0; i < data.length; i++)
+		{
+			System.out.print(data[i] + " ");
+
+			if ((i % 8) == 0)
+			{
+				System.out.print('\n');
+			}
 		}
 	}
 
@@ -86,6 +100,7 @@ public class Client implements UDPClient, Runnable
 	public byte[] receiveData()
 	{
 		DatagramPacket packet = this.receivePacket();
+		//Client.printByteArray(packet.getData());
 
 		if(packet != null)
 		{
@@ -100,6 +115,7 @@ public class Client implements UDPClient, Runnable
 	@Override
 	public DatagramPacket receivePacket()
 	{
+		System.out.println("BUFFERLENGTH" + packetBuffer.size());
 		if(!this.packetBuffer.isEmpty())
 		{
 			DatagramPacket packet = this.packetBuffer.getFirst();
@@ -126,7 +142,7 @@ public class Client implements UDPClient, Runnable
 	{
 		while(!this.socket.isClosed())
 		{
-			byte[] buffer = new byte[1500];
+			byte[] buffer = new byte[500];
 			DatagramPacket incomingPacket = new DatagramPacket(buffer, buffer.length);
 			try
 			{
@@ -146,5 +162,10 @@ public class Client implements UDPClient, Runnable
 	public boolean bufferEmpty()
 	{
 		return packetBuffer.isEmpty();
+	}
+
+	public int getBufferLength()
+	{
+		return packetBuffer.size();
 	}
 }

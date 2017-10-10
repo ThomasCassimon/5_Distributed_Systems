@@ -5,6 +5,7 @@ import Network.Constants;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -38,18 +39,38 @@ public class ClientMain
 
 		File file = new File("result.gif");
 
+		byte[][] data = new byte[client.getBufferLength()][500];
+		int i = 0;
 		while(!client.bufferEmpty())
 		{
-			try
+
+
+			data[i] = client.receiveData();
+			//file.append(client.receiveData());
+			i++;
+		}
+
+		byte[] dataA = new byte[data.length * 500];
+		int k = 0;
+
+		for(byte[] bytes: data)
+		{
+			for(i = 0;i<bytes.length; i++)
 			{
-				file.append(client.receiveData());
-			}
-			catch(IOException e)
-			{
-				System.err.println("Exception when writing file");
-				e.printStackTrace();
+				dataA[k] = bytes[i];
+				k++;
 			}
 		}
+		try
+		{
+			file.write(dataA);
+		}
+		catch(IOException e)
+		{
+			System.err.println("Exception when writing file");
+			e.printStackTrace();
+		}
+
 
 		System.out.println("Data received...");
 
