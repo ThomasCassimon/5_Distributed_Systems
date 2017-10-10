@@ -99,27 +99,18 @@ public class Client implements UDPClient, Runnable
 	@Override
 	public byte[] receiveData()
 	{
-		DatagramPacket packet = this.receivePacket();
-		//Client.printByteArray(packet.getData());
-
-		if(packet != null)
-		{
-			return this.receivePacket().getData();
-		}
-		else
-		{
-			throw new RuntimeException("Packet received was null");
-		}
+		return this.receivePacket().getData();
 	}
 
 	@Override
 	public DatagramPacket receivePacket()
 	{
-		System.out.println("BUFFERLENGTH" + packetBuffer.size());
+		//System.out.println("BUFFERLENGTH" + packetBuffer.size());
 		if(!this.packetBuffer.isEmpty())
 		{
-			DatagramPacket packet = this.packetBuffer.getFirst();
-			this.packetBuffer.removeFirst();
+			DatagramPacket packet = this.packetBuffer.get(0);
+			//Client.printByteArray(this.packetBuffer.get(0).getData());
+			this.packetBuffer.remove(0);
 			return packet;
 		}
 		else
@@ -150,6 +141,10 @@ public class Client implements UDPClient, Runnable
 				System.out.println("Received " + incomingPacket.getData().length + " Bytes");
 				this.packetBuffer.add(incomingPacket);
 				System.out.println("Packetbuffer size " + this.packetBuffer.size());
+			}
+			catch (SocketException se)
+			{
+				se.printStackTrace();
 			}
 			catch(IOException e)
 			{

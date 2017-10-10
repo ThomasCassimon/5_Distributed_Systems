@@ -39,31 +39,35 @@ public class ClientMain
 
 		File file = new File("result.gif");
 
-		byte[][] data = new byte[client.getBufferLength()][500];
-		int i = 0;
-		while(!client.bufferEmpty())
+		System.out.println("BUFFERLENGTH: " + client.getBufferLength());
+
+		byte[][] dataSeg = new byte[client.getBufferLength()][500];
+
+		int length = client.getBufferLength();
+		for(int i = 0; i<length;i++)
 		{
-
-
-			data[i] = client.receiveData();
+			dataSeg[i] = client.receiveData();
+			System.out.println("SEGMENT " + i);
 			//file.append(client.receiveData());
-			i++;
+			//Client.printByteArray(dataSeg[i]);
 		}
 
-		byte[] dataA = new byte[data.length * 500];
-		int k = 0;
 
-		for(byte[] bytes: data)
+		byte[] dataArr = new byte[dataSeg.length * 500];
+		int k = 0;
+		for(int i = 0; i<dataSeg.length;i++)
 		{
-			for(i = 0;i<bytes.length; i++)
+			for(int j = 0;j<dataSeg[i].length; j++)
 			{
-				dataA[k] = bytes[i];
-				k++;
+				dataArr[(i * 500) + j] = dataSeg[i][j];
+				//System.out.println("ARRAY INDEX " + ((i*500)+j) + "	" + dataSeg[i][j]);
+				//Client.printByteArray(dataSeg[i]);
 			}
 		}
 		try
 		{
-			file.write(dataA);
+			//Client.printByteArray(dataArr);
+			file.write(dataArr);
 		}
 		catch(IOException e)
 		{
@@ -74,7 +78,8 @@ public class ClientMain
 
 		System.out.println("Data received...");
 
-
+		System.out.println("Press any key to close server");
+		scanner.nextLine();
         client.stop();
     }
 }
