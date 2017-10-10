@@ -1,5 +1,6 @@
 package Network.UDP;
 
+import Files.File;
 import Network.Constants;
 
 import java.io.IOException;
@@ -27,16 +28,31 @@ public class ClientMain
 
         System.out.println("Data sent");
 	
-	    System.out.println("Press enter to receive data...");
+	    System.out.println("Press enter to check for data...");
 	    scanner.nextLine();
 
-		Thread t = new Thread(client);
-
-		t.start();
 	 
-		byte[] data = client.receivePacket().getData();
+		//byte[] data = client.receivePacket().getData();
+
+		//System.out.println(new String(data, Constants.ENCODING));
+
+		File file = new File("result.gif");
+
+		while(!client.bufferEmpty())
+		{
+			try
+			{
+				file.append(client.receiveData());
+			}
+			catch(IOException e)
+			{
+				System.err.println("Exception when writing file");
+				e.printStackTrace();
+			}
+		}
+
 		System.out.println("Data received...");
-		System.out.println(new String(data, Constants.ENCODING));
+
 
         client.stop();
     }

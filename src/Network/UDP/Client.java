@@ -131,7 +131,9 @@ public class Client implements UDPClient, Runnable
 			try
 			{
 				this.socket.receive(incomingPacket);
+				System.out.println("Received " + incomingPacket.getData().length + " Bytes");
 				this.packetBuffer.add(incomingPacket);
+				System.out.println("Packetbuffer size " + this.packetBuffer.size());
 			}
 			catch(IOException e)
 			{
@@ -139,5 +141,10 @@ public class Client implements UDPClient, Runnable
 				e.printStackTrace();
 			}
 		}
+	}
+
+	public boolean bufferEmpty()
+	{
+		return packetBuffer.isEmpty();
 	}
 }
