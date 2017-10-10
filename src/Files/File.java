@@ -88,6 +88,7 @@ public class File
 
 	/**
 	 * Uses the new Java NIO API to write files as fast as possible.
+	 * Creates a file if it does not yet exist.
 	 * @throws IOException An IOException can be thrown by the FileOutputStream Constructor, the FileChannel.write or the FileChannel.close method.
 	 */
 	public void write (byte[] data) throws
