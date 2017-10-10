@@ -76,7 +76,7 @@ public class Server implements UDPServer, Runnable
 			e.printStackTrace();
 		}
 		//Client.printByteArray(data);
-		System.out.println("");
+		//System.out.println("");
 	}
 
 	@Override
