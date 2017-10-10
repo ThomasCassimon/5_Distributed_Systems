@@ -74,7 +74,7 @@ public class Client implements TCPClient
 	{
 		byte[] arrayData = new byte[data.size()];
 
-		for (int i = 0; i<data.size();i++)
+		for (int i = 0; i < data.size(); i++)
 		{
 			arrayData[i] = data.get(i);
 		}
@@ -93,27 +93,17 @@ public class Client implements TCPClient
 	@Override
 	public byte[] receive()
 	{
-		int i;
+		byte[] data = new byte [0];
+		
 		try
 		{
-			i = inputStream.available();
+			data = new byte[inputStream.available()];
+			int i = inputStream.read(data);
+			System.out.println("Received " + i + " bytes");
 		}
 		catch (IOException e)
 		{
 			System.err.println("Error when estimating length of inputstream");
-			e.printStackTrace();
-		}
-
-		byte[] data = new byte[BUFFER_SIZE];
-
-
-		try
-		{
-			 inputStream.read(data);
-		}
-		catch (IOException e)
-		{
-			System.err.println("Error when reading byte from input stream");
 			e.printStackTrace();
 		}
 

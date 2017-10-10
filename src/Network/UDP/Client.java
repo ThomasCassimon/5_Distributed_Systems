@@ -8,53 +8,32 @@ import java.util.List;
 /**
  * Created by Astrid on 09-Oct-17.
  */
-public class Client implements UDPPeer, Runnable
+public class Client implements UDPClient, Runnable
 {
-	private boolean isRunning;
-	private int portNum;
 	private DatagramSocket socket;
 	private LinkedList<DatagramPacket> packetBuffer;
 
 	public Client()
 	{
-		this.isRunning = false;
 		this.socket = null;
-		this.packetBuffer = new LinkedList<>();
-		this.init();
+		this.packetBuffer = new LinkedList<DatagramPacket>();
 	}
 
-	public void init()
+	@Override
+	public void start()
 	{
 		try
 		{
 			this.socket = new DatagramSocket();
-			this.setPort(this.socket.getPort());
-			System.out.println("Receive socket created");
+			
+			Thread t = new Thread (this);
+			t.start();
 		}
-		catch(SocketException e)
+		catch (SocketException e)
 		{
-			System.err.println("Error when creating new datagramsocket");
+			System.err.println("An Exception was thrown while creating a new DatagramSocket.");
 			e.printStackTrace();
 		}
-		this.isRunning = true;
-	}
-
-	@Override
-	public void start() throws IOException
-	{
-		this.isRunning = true;
-	}
-
-	@Override
-	public int getPort()
-	{
-		return this.portNum;
-	}
-
-	@Override
-	public void setPort(int port)
-	{
-		this.portNum = port;
 	}
 
 	@Override
@@ -62,29 +41,20 @@ public class Client implements UDPPeer, Runnable
 					 int port,
 					 byte[] data)
 	{
-		InetAddress IP;
-		DatagramPacket packet = null;
 		try
 		{
-			IP = InetAddress.getByName(remoteHost);
-			packet = new DatagramPacket(data,0,data.length,IP,port);
+			this.socket.send(new DatagramPacket(data,0, data.length, InetAddress.getByName(remoteHost), port));
 		}
 		catch(UnknownHostException e)
 		{
 			System.err.println("Error host not found when trying to send packet");
 			e.printStackTrace();
 		}
-		try
-		{
-			this.socket.send(packet);
-		}
 		catch(IOException e)
 		{
 			System.err.println("Error when sending packet");
 			e.printStackTrace();
 		}
-
-
 	}
 
 	@Override
@@ -92,9 +62,7 @@ public class Client implements UDPPeer, Runnable
 					 int port,
 					 String data)
 	{
-		byte[] bytes = data.getBytes();
-		this.send(remoteHost,port,bytes);
-
+		this.send(remoteHost,port,data.getBytes());
 	}
 
 	@Override
@@ -117,32 +85,31 @@ public class Client implements UDPPeer, Runnable
 	@Override
 	public byte[] receiveData()
 	{
-		DatagramPacket packet = receivePacket();
+		DatagramPacket packet = this.receivePacket();
 
 		if(packet != null)
 		{
-			return receivePacket().getData();
+			return this.receivePacket().getData();
 		}
 		else
 		{
-			return null;
+			throw new RuntimeException("Packet received was null");
 		}
 	}
 
 	@Override
 	public DatagramPacket receivePacket()
 	{
-		if(!packetBuffer.isEmpty())
+		if(!this.packetBuffer.isEmpty())
 		{
-			DatagramPacket packet = packetBuffer.getFirst();
-			packetBuffer.removeFirst();
+			DatagramPacket packet = this.packetBuffer.getFirst();
+			this.packetBuffer.removeFirst();
 			return packet;
 		}
 		else
 		{
-			return null;
+			throw new RuntimeException("Packet buffer was empty");
 		}
-
 	}
 
 	@Override
@@ -150,31 +117,27 @@ public class Client implements UDPPeer, Runnable
 	{
 		if(this.socket != null)
 		{
-			socket.close();
+			this.socket.close();
 		}
-		this.isRunning = false;
 	}
 
 	@Override
 	public void run()
 	{
-		System.out.println("Running: " + isRunning);
-		System.out.println("Closed: " + socket.isClosed());
-		while(this.isRunning && !socket.isClosed())
+		while(!this.socket.isClosed())
 		{
 			byte[] buffer = new byte[1500];
-			DatagramPacket packet = new DatagramPacket(buffer,buffer.length);
+			DatagramPacket incomingPacket = new DatagramPacket(buffer, buffer.length);
 			try
 			{
-				socket.receive(packet);
-				packetBuffer.add(packet);
+				this.socket.receive(incomingPacket);
+				this.packetBuffer.add(incomingPacket);
 			}
 			catch(IOException e)
 			{
 				System.err.println("Error when trying to receive a packet");
 				e.printStackTrace();
 			}
-			System.out.println("Packet received");
 		}
 	}
 }

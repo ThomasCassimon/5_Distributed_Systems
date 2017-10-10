@@ -4,28 +4,12 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.util.List;
 
-public interface UDPPeer
+public interface UDPClient
 {
 	/**
 	 * Starts the UDP server.
-	 * @throws IOException
 	 */
-	public void start () throws
-						 IOException;
-
-	/**
-	 * Returns the port that the server is running on.
-	 * @return	The port that the server runs on.
-	 */
-	public int getPort ();
-
-	/**
-	 * Sets the port the server is running on.
-	 * @param	port	The new port the server should listen on.
-	 * WARNING: Before the port is changed, the server needs to be stopped.
-	 * WARNING: After the port is changed, the server needs to be restarted.
-	 */
-	public void setPort (int port);
+	public void start ();
 
 	/**
 	 * Sends a string
