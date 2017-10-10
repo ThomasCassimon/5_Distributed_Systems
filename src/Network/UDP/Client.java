@@ -138,9 +138,9 @@ public class Client implements UDPClient, Runnable
 			try
 			{
 				this.socket.receive(incomingPacket);
-				System.out.println("Received " + incomingPacket.getData().length + " Bytes");
+				//System.out.println("Received " + incomingPacket.getData().length + " Bytes");
 				this.packetBuffer.add(incomingPacket);
-				System.out.println("Packetbuffer size " + this.packetBuffer.size());
+				//System.out.println("Packetbuffer size " + this.packetBuffer.size());
 			}
 			catch (SocketException se)
 			{

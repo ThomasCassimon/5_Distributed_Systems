@@ -40,14 +40,11 @@ public class ServerMain
 			byte[] dataA = file.read();
 
 			byte[][] dataS = File.segment(dataA,500);
-			System.out.println("NUMBER SEGMENTS: " + dataS.length);
+			//System.out.println("NUMBER SEGMENTS: " + dataS.length);
 
-			int i = 0;
 			for(byte[] bytes: dataS)
 			{
 				server.send(dgPacket.getAddress().getHostAddress(),dgPacket.getPort(),bytes);
-				System.out.println("SEGMENT " + i);
-				i++;
 
 			}
 		}

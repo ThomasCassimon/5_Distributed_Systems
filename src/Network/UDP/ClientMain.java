@@ -39,7 +39,7 @@ public class ClientMain
 
 		File file = new File("result.gif");
 
-		System.out.println("BUFFERLENGTH: " + client.getBufferLength());
+		//System.out.println("BUFFERLENGTH: " + client.getBufferLength());
 
 		byte[][] dataSeg = new byte[client.getBufferLength()][500];
 
@@ -47,7 +47,7 @@ public class ClientMain
 		for(int i = 0; i<length;i++)
 		{
 			dataSeg[i] = client.receiveData();
-			System.out.println("SEGMENT " + i);
+			//System.out.println("SEGMENT " + i);
 			//file.append(client.receiveData());
 			//Client.printByteArray(dataSeg[i]);
 		}
