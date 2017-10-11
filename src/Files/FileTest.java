@@ -2,14 +2,16 @@ package Files;
 
 import java.io.IOException;
 
+import static java.lang.Math.min;
+
 public class FileTest
 {
 	public static void main (String[] args)
 	{
-		String filename1 = "file1.bin";
-		String filename2 = "file2.bin";
-		String filename3 = "file3.bin";
-		String filename4 = "file4.bin";
+		String filename1 = "giphy.gif";
+		String filename2 = "copy1.gif";
+		String filename3 = "giphy.gif";
+		String filename4 = "copy3.gif";
 		
 		File file1 = new File (filename1);
 		File file2 = new File (filename2);
@@ -18,6 +20,7 @@ public class FileTest
 
 		try
 		{
+			/*
 			long startRead = System.nanoTime();
 			byte[] fileData = file1.read();
 			long endRead = System.nanoTime();
@@ -32,22 +35,23 @@ public class FileTest
 			byte[][] segmented = File.segment(fileData, 1 << 12);
 			System.out.println("Number of segments: " + Integer.toString(segmented.length));
 			System.out.println("Segment Size: " + Integer.toString(segmented[0].length));
-			
-			/*
-			byte[][] segmentedData = new byte [segmented.length][segmented[0].length];
-			
-			for (int i = 0; i < segmentedData.length; i++)
+			*/
+
+			System.out.println(file3.toString());
+
+			byte[][] segmentedData = new byte [(int) min(Math.ceil((float) file3.size() / (float) (1 << 12)), Integer.MAX_VALUE)][1<<12];
+
+			for (int i = 0; file3.available() > 0; i++)
 			{
-				System.out.println("Read " + (1 << 12) + " bytes from file, segment no.: " + i);
+				System.out.println("Read " + (1 << 12) + " bytes from file, segment no.: " + i + " Avail: " + Integer.toString(file3.available()));
 				segmentedData[i] = file3.read(1 << 12);
 			}
 			
 			for (int i = 0; i < segmentedData.length; i++)
 			{
 				System.out.println("Wrote " + (segmentedData[i].length) + " bytes from file, segment no.: " + i);
-				file4.write(segmentedData[i]);
+				file4.append(segmentedData[i]);
 			}
-			*/
 		}
 		catch (IOException e)
 		{

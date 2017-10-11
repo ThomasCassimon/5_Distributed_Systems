@@ -48,6 +48,8 @@ public class File
 		
 		channel.close();
 
+		inputStream.close();
+
 		return buffer.array();
 	}
 
@@ -57,7 +59,7 @@ public class File
 	 * @param numBytes  The amount of bytes to read.
 	 * @return      A byte array containing all bytes of the file we read.
 	 * @throws IOException  An IOException can be thrown by the FileChannel.read() method, or because the file is too large.
-	 
+	 */
 	public byte[] read (int numBytes)   throws
 										IOException
 	{
@@ -72,27 +74,21 @@ public class File
 
 		channel = channel.position(this.filePos);
 		
-		System.out.println("Allocating byte buffer");
-		
 		ByteBuffer buffer =  ByteBuffer.allocate(numBytes);
-
-		System.out.println("Allocated Byte buffer");
 		
 		//while (channel.position() < channel.size())
 		//{
-			System.out.println("Channel.position: " + channel.position() + " Channel.size(): " + channel.size());
-			channel.read(buffer);
+		channel.read(buffer);
 		//}
-		
-		System.out.println("Read bytes");
 		
 		this.filePos = min(this.filePos + numBytes, channel.size());
 
 		channel.close();
 
+		inputStream.close();
+
 		return buffer.array();
 	}
-	*/
 	
 	/**
 	 * Uses the new Java NIO API to write files as fast as possible.
@@ -109,17 +105,19 @@ public class File
 		channel.write(ByteBuffer.wrap(data));
 
 		channel.close();
+
+		outputStream.close();
 	}
 
 	/**
 	 * Uses the new Java NIO API to append to files as fast as possible.
 	 * @param data  The data to be appended to the file.
 	 * @throws IOException An IOException can be thrown by the FileOutputStream Constructor, the FileChannel.write or the FileChannel.close method.
-	 
-	public void append (byte[] data) throws
-														 IOException
+	 */
+	public void append (byte[] data)	throws
+										IOException
 	{
-		FileOutputStream outputStream = new FileOutputStream(this.filename);
+		FileOutputStream outputStream = new FileOutputStream(this.filename, true);
 
 		FileChannel channel = outputStream.getChannel();
 
@@ -128,8 +126,35 @@ public class File
 		channel.write(ByteBuffer.wrap(data));
 
 		channel.close();
+
+		outputStream.close();
 	}
-	*/
+
+	/**
+	 * Returns the size of the associated channel, in bytes.
+	 * @return
+	 * @throws IOException
+	 */
+	public long size () throws IOException
+	{
+		FileInputStream inputStream = new FileInputStream(this.filename);
+
+		long size = inputStream.getChannel().size();
+
+		inputStream.close();
+
+		return size;
+	}
+
+	public int available () throws IOException
+	{
+		FileInputStream inputStream = new FileInputStream(this.filename);
+		FileChannel channel = inputStream.getChannel();
+		int avail =  (int) min(Integer.MAX_VALUE,channel.size()) - (int) this.filePos;
+		channel.close();
+		inputStream.close();
+		return avail;
+	}
 	
 	/**
 	 * Segments a file in a number of segments of segmentSize bytes.
@@ -158,5 +183,22 @@ public class File
 		}
 
 		return result;
+	}
+
+	public boolean exists ()
+	{
+		return (new File(this.filename)).exists();
+	}
+
+	public String toString () {
+		try
+		{
+			return "File: " + this.filename + "\n" + "Position: " + Long.toString(this.filePos) + "\n" + "Available: " + Integer.toString(this.available());
+		}
+		catch (IOException ioe)
+		{
+			ioe.printStackTrace();
+			return "File: " + this.filename + "\n" + "Position: " + Long.toString(this.filePos);
+		}
 	}
 }
